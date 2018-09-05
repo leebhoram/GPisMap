@@ -1,6 +1,6 @@
-% GPisMap demo 2D 
+% GPisMap demo 2D
 %
-% by Bhoram Lee 
+% by Bhoram Lee
 % Aug. 28. 2018
 clearvars
 close all
@@ -20,7 +20,7 @@ test_intv = 0.1;
 xtest = single([xg(:)'; yg(:)']);
 
 skip = 10;
-initframe = 101; % first 100 frames are almost static... 
+initframe = 101; % first 100 frames are almost static...
 lastframe = (floor((size(poses,1)-initframe)/skip))*skip+initframe;
 for nframe = initframe:skip:lastframe
 
@@ -33,16 +33,16 @@ for nframe = initframe:skip:lastframe
     mexGPisMap('update',single(thetas),...
                         single(ranges(nframe,:)'),...
                         single([tr; reshape(Rot,[],1)]));
-  
+
     % test visualization
-    if  1 % nframe == lastframe % set the condition to 1 to visualize every update 
-        visualize_gpisMap        
+    if  1 % nframe == lastframe % set the condition to 1 to visualize every update
+        visualize_gpisMap
     end
-    
+
     % % pause if needed
     % disp('Press a button to continue')
     % pause
-    
+
 end
 
 % delete all resources

@@ -150,10 +150,10 @@ void OnGPIS::train(const vecNode3& samples){
 
 // void OnGPIS::trainTemp(const vecNode& samples){
 //     reset();
-// 
+//
 //     int N = samples.size();
 //     int dim = 2;
-// 
+//
 //     if (N > 0){
 //         nSamples = N;
 //         x = EMatrixX::Zero(dim,N);
@@ -161,12 +161,12 @@ void OnGPIS::train(const vecNode3& samples){
 //         EVectorX f = EVectorX::Zero(N);
 //         EVectorX sigx = EVectorX::Zero(N);
 //         EVectorX siggrad = EVectorX::Zero(N);
-// 
+//
 //         gradflag.clear();
 //         gradflag.resize(N,0.0);
-// 
+//
 //         EMatrixX grad_valid(N,2);
-// 
+//
 //         int k=0;
 //         int count = 0;
 //         for (auto it = samples.begin(); it!=samples.end(); it++, k++){
@@ -190,26 +190,26 @@ void OnGPIS::train(const vecNode3& samples){
 //         }
 //         grad_valid.conservativeResize(count,2);
 //         //std::cout << "grad_valid = " <<  grad_valid << std::endl;
-// 
+//
 //         EVectorX y(N+2*count);
 //         y << f,grad_valid.col(0),grad_valid.col(1);
 //         std::cout << "y = " <<  y << std::endl;
 //         std::cout << "x = " <<  x << std::endl;
-// 
+//
 //         EMatrixX K = matern32_sparse_deriv1(x, gradflag, param.scale, sigx, siggrad);
-// 
-// 
+//
+//
 //         L = K.llt().matrixL();
-// 
+//
 //         std::cout << "L= " << L << std::endl;
-// 
+//
 //         alpha = y;
 //         L.template triangularView<Eigen::Lower>().solveInPlace(alpha);
 //         L.transpose().template triangularView<Eigen::Upper>().solveInPlace(alpha);
-// 
+//
 //         std::cout << "alpha = " << alpha << std::endl;
 //         trained = true;
-// 
+//
 //     }
 //     return;
 // }
@@ -314,25 +314,25 @@ void OnGPIS::test2Dpoint(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& gra
 //     if (!isTrained()){
 //         return;
 //     }
-// 
+//
 //     EMatrixX K = matern32_sparse_deriv1(x, gradflag, xt, param.scale);
-//     
-// 
+//
+//
 //     EVectorX res = K.transpose()*alpha;
 //     val = res(0);
 //     gradx = res(1);
 //     grady = res(2);
-//         
+//
 //     std::cout << alpha << std::endl;
-// 
+//
 //     L.template triangularView<Eigen::Lower>().solveInPlace(K);
 //     K = K.array().pow(2);
 //     EVectorX v = K.colwise().sum();
-// 
+//
 //     varval = 1.01-v(0);
 //     vargradx = three_over_scale + 0.1 - v(1);
 //     vargrady = three_over_scale + 0.1 - v(2);
-// 
+//
 // }
 
 void OnGPIS::test2Dpoint(FLOAT px, FLOAT py,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady)

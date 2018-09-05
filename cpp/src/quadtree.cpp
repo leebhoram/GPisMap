@@ -286,31 +286,31 @@ bool QuadTree::Insert(std::shared_ptr<Node> n,  std::unordered_set<QuadTree*>& q
     if (northWest->Insert(n,quads)) {
         if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3)
             quads.insert(this);
-        updateCount(); 
+        updateCount();
         return true;
     }
-    
+
     if (northEast->Insert(n,quads)) {
         if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3)
             quads.insert(this);
-        updateCount(); 
+        updateCount();
         return true;
     }
-    
+
     if (southWest->Insert(n,quads)) {
         if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3)
             quads.insert(this);
-        updateCount(); 
+        updateCount();
         return true;
     }
-    
+
     if (southEast->Insert(n,quads)) {
         if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3)
             quads.insert(this);
-        updateCount(); 
+        updateCount();
         return true;
     }
-    
+
 }
 
 void QuadTree::updateCount()

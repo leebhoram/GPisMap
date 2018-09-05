@@ -36,7 +36,7 @@ void Node::updateData(FLOAT _val, FLOAT _pose_sig, Point<FLOAT> _grad, FLOAT _gr
 }
 
 
-void Node::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){    
+void Node::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){
     pose_sig = _pose_sig;
     grad_sig = _grad_sig;
 }
@@ -74,7 +74,7 @@ void Node3::updateData(FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _grad, FLOAT _
     nt = n;
 }
 
-void Node3::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){    
+void Node3::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){
     pose_sig = _pose_sig;
     grad_sig = _grad_sig;
 }

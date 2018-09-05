@@ -1,10 +1,10 @@
 function [Lines,Vertices,Objects]=isocontour(I,isovalue)
-% This function ISOCONTOUR computes the isocontour geometry for 
-% a certain 2D image and isovalue. To Extract the isocontour geometry it 
+% This function ISOCONTOUR computes the isocontour geometry for
+% a certain 2D image and isovalue. To Extract the isocontour geometry it
 % uses Marching Squares and linear interpolation. Followed by sorting the
 % contour geometry into separate sorted contours.
 %
-% This function is the 2D equivalent of Isosurface extraction 
+% This function is the 2D equivalent of Isosurface extraction
 % using Marching Cubes in 3D.
 %
 %
@@ -39,7 +39,7 @@ function [Lines,Vertices,Objects]=isocontour(I,isovalue)
 %         Points=Objects{i};
 %         plot(Vertices(Points,2),Vertices(Points,1),'Color',rand(3,1));
 %    end
-% 
+%
 % Example,
 %    I = im2double(imread('rice.png'));
 %    [Lines,Vertices]=isocontour(I,0.5);
@@ -47,12 +47,12 @@ function [Lines,Vertices,Objects]=isocontour(I,isovalue)
 %    V1=Vertices(Lines(:,1),:); V2=Vertices(Lines(:,2),:);
 %    plot([V1(:,2) V2(:,2)]',[V1(:,1) V2(:,1)]','b');
 %    % Calculate Contour Normals
-%    N = V1-V2; L = sqrt(N(:,1).^2+N(:,2).^2)+eps; 
+%    N = V1-V2; L = sqrt(N(:,1).^2+N(:,2).^2)+eps;
 %    N(:,1)=N(:,1)./L; N(:,2)=-N(:,2)./L;
 %    plot([V1(:,2) V1(:,2)+N(:,1)*5]',[V1(:,1) V1(:,1)+N(:,2)*5]','r');
 %
 %
-% This function is written by D.Kroon University of Twente (March 2011)  
+% This function is written by D.Kroon University of Twente (March 2011)
 
 
 % Check Inputs
@@ -118,7 +118,7 @@ Obj(nObjects,2)=i+1;
 Objects=cell(1,nObjects);
 for i=1:nObjects
     % Determine if the line is closed
-    if(Lines(Obj(i,1),1)==Lines(Obj(i,2),2)) 
+    if(Lines(Obj(i,1),1)==Lines(Obj(i,2),2))
         Objects{i}=[Lines(Obj(i,1):Obj(i,2),1);Lines(Obj(i,1),1)];
     else
         Objects{i}=Lines(Obj(i,1):Obj(i,2),1);
@@ -137,26 +137,26 @@ function [V,F]=LookupDB(Img,isovalue)
 %
 I=zeros(16,4);
 I(1,:)= [4 4 4 4]; % [0 0;0 0]
-I(2,:)= [1 0 4 4]; % [1 0;0 0] 
-I(3,:)= [2 1 4 4]; % [0 1;0 0] 
-I(4,:)= [2 0 4 4]; % [1 1;0 0] 
-I(5,:)= [0 3 4 4]; % [0 0;1 0] 
-I(6,:)= [1 3 4 4]; % [1 0;1 0] 
+I(2,:)= [1 0 4 4]; % [1 0;0 0]
+I(3,:)= [2 1 4 4]; % [0 1;0 0]
+I(4,:)= [2 0 4 4]; % [1 1;0 0]
+I(5,:)= [0 3 4 4]; % [0 0;1 0]
+I(6,:)= [1 3 4 4]; % [1 0;1 0]
 I(7,:)= [2 1 0 3]; % [0 1;1 0] ambiguous
-I(8,:)= [2 3 4 4]; % [1 1;1 0] 
-I(9,:)= [3 2 4 4]; % [0 0;0 1] 
+I(8,:)= [2 3 4 4]; % [1 1;1 0]
+I(9,:)= [3 2 4 4]; % [0 0;0 1]
 I(10,:)=[1 0 3 2]; % [1 0;0 1] ambiguous
-I(11,:)=[3 1 4 4]; % [0 1;0 1] 
-I(12,:)=[3 0 4 4]; % [1 1;0 1] 
-I(13,:)=[0 2 4 4]; % [0 0;1 1] 
-I(14,:)=[1 2 4 4]; % [1 0;1 1] 
-I(15,:)=[0 1 4 4]; % [0 1;1 1] 
-I(16,:)=[4 4 4 4]; % [1 1;1 1] 
+I(11,:)=[3 1 4 4]; % [0 1;0 1]
+I(12,:)=[3 0 4 4]; % [1 1;0 1]
+I(13,:)=[0 2 4 4]; % [0 0;1 1]
+I(14,:)=[1 2 4 4]; % [1 0;1 1]
+I(15,:)=[0 1 4 4]; % [0 1;1 1]
+I(16,:)=[4 4 4 4]; % [1 1;1 1]
 
-% The base-edges by vertex positions 
+% The base-edges by vertex positions
 E=[0 0 1 0; 0 0 0 1; 0 1 1 1; 1 0 1 1; 4 4 4 4];
 
-% base-Polygons by vertexpostions 
+% base-Polygons by vertexpostions
 IE=E(I(:)+1,:);
 IE=[IE(1:16,:) IE(17:32,:); IE(33:48,:) IE(49:64,:)];
 
@@ -190,7 +190,7 @@ F=[(1:size(J,1))' (size(J,1)+1:2*size(J,1))'];
 % Remove dubplicate vertices
 [VP,a,Ind]=unique(VP,'rows'); F=Ind(F);
 
-% Vertices described by image grid-points to real 
+% Vertices described by image grid-points to real
 % linear Interpolated vertices
 Vind1=VP(:,1)+(VP(:,2)-1)*size(Img,1);
 Vind2=VP(:,3)+(VP(:,4)-1)*size(Img,1);

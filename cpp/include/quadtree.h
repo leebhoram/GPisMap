@@ -171,7 +171,7 @@ public:
     };
 
     bool Insert(std::shared_ptr<Node> n);
-    bool Insert(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& quads); 
+    bool Insert(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& quads);
     bool IsNotNew(std::shared_ptr<Node> n);
     bool Update(std::shared_ptr<Node> n);
     bool Update(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& quads);

@@ -1,7 +1,7 @@
 #include "GPisMap3.h"
 #include <chrono>
 #include <thread>
-// 
+//
 static FLOAT Rtimes = (FLOAT)2.0;
 static FLOAT C_leng = (FLOAT)0.025;
 tree_param OcTree::param = tree_param((FLOAT)(0.0125/2.0),(FLOAT)1.6,(FLOAT)0.4, C_leng);

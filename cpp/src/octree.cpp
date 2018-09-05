@@ -328,7 +328,7 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
                     quads.insert(this);
                 return true;
             }
-           
+
              // Otherwise, subdivide and then add the point to whichever node will accept it
             //numNodes = 0;
             if (sqdist(node->getPos(), n->getPos()) < OcTree::param.min_halfleng_sqr){
@@ -364,49 +364,49 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
             node = nullptr;
         }
     }
-    
+
     if (northWestFront->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
-            quads.insert(this); 
+            quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (northEastFront->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (southWestFront->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (southEastFront->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (northWestBack->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (northEastBack->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
-            quads.insert(this); 
+            quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (southWestBack->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
         updateCount(); return true;
     }
-    
+
     if (southEastBack->Insert(n,quads)) {
         if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
             quads.insert(this);
@@ -414,7 +414,7 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
     }
 
     return false;
-    
+
 }
 
 void OcTree::updateCount()

@@ -210,7 +210,7 @@ public:
     OcTree* const getRoot();
 
     bool Insert(std::shared_ptr<Node3> n);
-    bool Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads); 
+    bool Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads);
     bool IsNotNew(std::shared_ptr<Node3> n);
     bool Update(std::shared_ptr<Node3> n);
     bool Update(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads);

@@ -23,7 +23,7 @@ void GPou::train(const EMatrixX& xt,const EVectorX& f)
         alpha = f;
         L.template triangularView<Lower>().solveInPlace(alpha);
         L.transpose().template triangularView<Upper>().solveInPlace(alpha);
-        
+
         trained = true;
     }
 }
@@ -37,7 +37,7 @@ void GPou::test(const EMatrixX& xt,EVectorX& f, EVectorX& var) // Is is differen
 
     //val = res.head(xt.cols());
     L.template triangularView<Lower>().solveInPlace(K);
-    
+
     K = K.array().pow(2);
     EVectorX v = K.colwise().sum();
 
@@ -70,11 +70,11 @@ void ObsGP1D::reset(){
 void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
 {
     reset();
-  
+
     if ((N[0] > 0) && (xt !=0)){
         nSamples = N[0];
         nGroup = nSamples/(param.group_size) + 1;
-        
+
         //std::cout << "nSamples : " << nSamples << std::endl;
 
         range.push_back(xt[0]);
@@ -94,9 +94,9 @@ void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
                 // std::shared_ptr<GPou> g(new GPou(param.scale,param.noise));
                 std::shared_ptr<GPou> g(new GPou());
                 g->train(x_,f_);
-                           
+
                 gps.push_back(std::move(g));
-              
+
             }
             else{ // the last two groups split in half
                 // the second to last
@@ -147,7 +147,7 @@ void ObsGP1D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
         FLOAT liml = (*(range.begin())+param.margin);
         FLOAT limr = (*(range.end()-1)-param.margin);
         for (int k=0;k<N;k++){
-            
+
             EVectorX f = val.segment(k,1);
             EVectorX v = var.segment(k,1);
             var(k) = 1e6;
@@ -272,7 +272,7 @@ void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
 
     if ( (Ind_i0.size() > 0) && (Ind_i1.size() > 0) && (Ind_j0.size() > 0) && (Ind_j1.size() > 0))
         repartition = false;
-    
+
     return;
 }
 
@@ -338,7 +338,7 @@ void ObsGP2D::trainValidPoints(FLOAT xt[], FLOAT f[])
             }
         }
     }
-         
+
     trained = true;
     return;
 }
@@ -373,8 +373,8 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
 
     int N = xt.cols();
 
-    //std::cout << "# test points: " << N <<  std::endl;   
-    
+    //std::cout << "# test points: " << N <<  std::endl;
+
     for (int k=0;k<N;k++){
 
         EVectorX f = val.segment(k,1);
@@ -428,8 +428,8 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
             }
         }
     }
-   
-    
+
+
     return;
 }
 

@@ -1,15 +1,15 @@
-disp('drawing...'); 
-% Note: Displaying plots sometimes causes an (uknown) error. 
+disp('drawing...');
+% Note: Displaying plots sometimes causes an (uknown) error.
 %       If you want to save the whole sequence,
 %       then start Matlab with the '-nodisplay' option (or
 %       add set(gcf,'visiable','off') before Ln. 21)
 %       and add codes that save the images in a folder.
 
-gp_bias = 0.2;   
+gp_bias = 0.2;
 sensor_offset = [0.08;0];
 head = 0.5*[0.25 0 -0.25 0.25; 0 1 0 0 ];
 
-res = mexGPisMap('test',xtest);       
+res = mexGPisMap('test',xtest);
 arr = [0 1; -1 0]*Rot*head+tr;
 fval = res(1,:) + gp_bias;
 va = reshape(res(4,:),size(xg));
