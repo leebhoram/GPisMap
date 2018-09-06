@@ -1,6 +1,6 @@
 # GPisMap -- Gaussian Process Implicit Surface Map
 
-The major contributors of this work include [Bhoram Lee](https://github.com/leebhoram), [Clark Zhang](https://github.com/chickensouple) and [HUANG Zonghao](https://github.com/huangzonghao).
+The major contributors of this repository include [Bhoram Lee](https://github.com/leebhoram) and [HUANG Zonghao](https://github.com/huangzonghao).
 
 ## Introduction
 
@@ -32,7 +32,7 @@ git clone https://github.com/leebhoram/GPisMap.git
 cd mex
 ```
 
-3. Compile the mex functions by executing the mex script. (Pre-compiled mex functions for AMD64 CPU are provided, so you may skip this step if you are using such a CPU)
+3. Compile the mex functions by executing the make script.
     * Setup mex 
     ```
     mex -setup
@@ -44,6 +44,7 @@ cd mex
     ```
 
 4. Run the demo scripts
+
     * For 2D 
     ```
     run('../matlab/demo_gpisMap.m')
@@ -59,15 +60,21 @@ Code has been tested under:
 
 - Ubuntu 16.04 with Intel Core i7-4900MQ @ 2.90GHz
 
-## Citation
+## Note
 
-If you find GPisMap useful in your research, please consider citing:
-```
-@article{<++>,
-    Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, Daniel D. Lee},
-    Title = {Oneline Continuous Mapping using Gaussian Process Implicit Surfaces},
-    Journal = {<++>},
-    Year = {<++>}
-}
+This work has been submitted to [ICRA 2019](https://www.icra2019.org/) for
+review.
 
-```
+<!-- ## Citation
+   - 
+   - If you find GPisMap useful in your research, please consider citing:
+   - ```
+   - @article{<++>,
+   -     Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, Daniel D. Lee},
+   -     Title = {Oneline Continuous Mapping using Gaussian Process Implicit Surfaces},
+   -     Journal = {<++>},
+   -     Year = {<++>}
+   - }
+   - 
+   - ```
+   -->
