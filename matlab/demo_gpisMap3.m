@@ -5,6 +5,7 @@ close all
 clearvars
 
 addpath('./plot_scripts');
+addpath('../mex');
 %addpath(genpath('..'));
 mexGPisMap3('reset')
 
