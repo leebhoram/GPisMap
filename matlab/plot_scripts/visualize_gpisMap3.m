@@ -6,7 +6,7 @@ gcf_color = 'k';
 fig_visible = 'on';
 param.bias = 0.2; % This must be the same to xxxxx
 
-res  = mexGPisMap3('test-mt',xtest1);
+res  = mexGPisMap3('test',xtest1);
 fval = res(1,:);
 val = reshape(fval,size(xg))+param.bias;
 

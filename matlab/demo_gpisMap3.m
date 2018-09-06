@@ -36,7 +36,7 @@ for k=1:3:numel(FrameNums)
     t = T(4,1:3)';
 
     mexGPisMap3('setCamera',camID,'bigbird'); % See mex/mexGPisMap3.cpp for camera calibration info
-    mexGPisMap3('update-mt',D,[t' reshape(R,1,[])]);
+    mexGPisMap3('update',D,[t' reshape(R,1,[])]);
 
     close all;
     if  1 % k == k_last

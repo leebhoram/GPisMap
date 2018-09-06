@@ -100,7 +100,6 @@ protected:
     void evalPoints();
     void addNewMeas();
     void updateGPs();
-    void updateGPs_mt();
 
     ObsGP* gpo;
     std::vector<FLOAT> obs_valid_u;
@@ -121,9 +120,7 @@ public:
     void reset();
 
     void update( FLOAT * dataz, int N, std::vector<FLOAT> & pose);
-    void update_mt( FLOAT * dataz, int N, std::vector<FLOAT> & pose);
     bool test( FLOAT* x, int dim, int leng, FLOAT * res);
-    bool test_mt( FLOAT* x, int dim, int leng, FLOAT * res);
     void resetCam(camParam c);
 
     void getAllPoints(std::vector<FLOAT> & pos);

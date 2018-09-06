@@ -103,62 +103,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
             std::cout << "Error: Check the input dimension." << std::endl;
         return;
     }
-    else if (commstr.compare("update-mt")==0) {
-
-        if (gpm == 0){
-            gpm = new GPisMap3();
-        }
-        mwSize numDim = mxGetNumberOfDimensions(prhs[1]);
-        const mwSize *dims = mxGetDimensions(prhs[1]);
-
-        if ( numDim == 2 && (nrhs == 3))
-        {
-            if (sizeof(FLOAT) == sizeof(double)){ // double-precision
-                if (mxDOUBLE_CLASS != mxGetClassID(prhs[1]) ||
-                    mxDOUBLE_CLASS != mxGetClassID(prhs[2]) ){
-                    std::cout << "The input data must be double type. @ train()" << std::endl;
-                    return;
-                }
-            }
-            else if (sizeof(FLOAT) == sizeof(float)) { // single-precision
-                if (mxSINGLE_CLASS != mxGetClassID(prhs[1]) ||
-                    mxSINGLE_CLASS != mxGetClassID(prhs[2]) ){
-                    std::cout << "The input data must be float (single) type.  @ train()" << std::endl;
-                    return;
-                }
-            }
-            else {
-                std::cout << "The input data must be float (single or double) type. @ train()" << std::endl;
-                return;
-            }
-
-            FLOAT * pz = (FLOAT *)mxGetData(prhs[1]);
-            FLOAT * ppose = (FLOAT *)mxGetData(prhs[2]);
-
-            std::vector<FLOAT> pose(ppose, ppose + mxGetNumberOfElements(prhs[2]) );
-
-            if (nlhs > 0){
-                plhs[0] = mxCreateDoubleMatrix(1,1,mxREAL);
-            }
-
-            int numel =  mxGetNumberOfElements(prhs[1]);
-            t1 = std::chrono::high_resolution_clock::now();
-            gpm->update_mt(pz, numel, pose);
-            t2= std::chrono::high_resolution_clock::now();
-
-            // test time
-            if (nlhs > 0){
-                std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-                test_time = time_collapsed.count();
-                double *ptime   = (double*)mxGetPr(plhs[0]);
-                ptime[0] = test_time;
-            }
-
-        }
-        else
-            std::cout << "Error: Check the input dimension." << std::endl;
-        return;
-    }
     else if (commstr.compare("test")==0) {
         const mwSize *dims = mxGetDimensions(prhs[1]);
         int dim = dims[0];
@@ -202,65 +146,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
 
             FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
             gpm->test(px, dim, N, pRes);
-
-            // test time
-            if (nlhs == 2){
-                t2= std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-                test_time = time_collapsed.count();
-                double *ptime   = (double*)mxGetPr(plhs[1]);
-                ptime[0] = test_time;
-            }
-
-        }
-        else if (gpm ==0){
-            std::cout << "Error: the map is not initialized." << std::endl;
-        }
-
-    }
-    else if (commstr.compare("test-mt")==0) {
-        const mwSize *dims = mxGetDimensions(prhs[1]);
-        int dim = dims[0];
-        int N = dims[1];
-
-        if (dim !=3)
-            return;
-
-        if (sizeof(FLOAT) == sizeof(double)){ // double-precision
-            if (mxDOUBLE_CLASS != mxGetClassID(prhs[1]) ){
-                std::cout << "The input data must be double type.  @ test()" << std::endl;
-                return;
-            }
-        }
-        else if (sizeof(FLOAT) == sizeof(float))  { // single-precision
-            if (mxSINGLE_CLASS != mxGetClassID(prhs[1])){
-                std::cout << "The input data must be float (single) type. @ test()" << std::endl;
-                return;
-            }
-        }
-        else {
-            std::cout << "The input data must be float (single or double) type. @ test()" << std::endl;
-            return;
-        }
-
-        if ((gpm != 0) && (N > 0)){
-            FLOAT* px = (FLOAT *)mxGetData(prhs[1]);
-
-            if (sizeof(FLOAT) == sizeof(double)){
-                plhs[0] = mxCreateDoubleMatrix(2*(1+dim),N,mxREAL);   // f-value[0],  grad-value[1,2], variances[3-5]
-            }
-            else if (sizeof(FLOAT) == sizeof(float)){
-                plhs[0] = mxCreateNumericMatrix(2*(1+dim),N,mxSINGLE_CLASS, mxREAL);
-            }
-
-            if (nlhs == 2){
-                plhs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
-                // test time
-                t1 = std::chrono::high_resolution_clock::now();
-            }
-
-            FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
-            gpm->test_mt(px, dim, N, pRes);
 
             // test time
             if (nlhs == 2){

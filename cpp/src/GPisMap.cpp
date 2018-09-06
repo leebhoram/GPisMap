@@ -166,24 +166,6 @@ void GPisMap::update( FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> &
     return;
 }
 
-void GPisMap::update_mt( FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose)
-{
-    if (!preproData(datax,dataf,N,pose))
-        return;
-
-    // Step 1
-    if (regressObs()){
-
-        // Step 2
-        updateMapPoints();
-        // Step 3
-        addNewMeas();
-        // Step 4
-        updateGPs_mt();
-    }
-    return;
-}
-
 bool GPisMap::regressObs( ){
     t1= std::chrono::high_resolution_clock::now();
     int N[2];
@@ -610,49 +592,6 @@ void GPisMap::evalPoints(){
     return;
 }
 
-void GPisMap::updateGPs(){
-    t1= std::chrono::high_resolution_clock::now();
-    int k = 0;
-
-    std::unordered_set<QuadTree*> updateSet(activeSet);
-    for (auto it = activeSet.begin(); it!= activeSet.end(); it++){
-
-        Point<FLOAT> ct = (*it)->getCenter();
-        FLOAT l = (*it)->getHalfLength();
-        AABB searchbb(ct.x,ct.y,2.0*l);
-        std::vector<QuadTree*> qs;
-        t->QueryNonEmptyLevelC(searchbb,qs);
-        if (qs.size()>0){
-            for (auto itq = qs.begin(); itq!=qs.end(); itq++){
-                updateSet.insert(*itq);
-            }
-        }
-    }
-
-    for (auto it = updateSet.begin(); it!= updateSet.end(); it++){
-
-        if ((*it) != 0){
-            Point<FLOAT> ct = (*it)->getCenter();
-            FLOAT l = (*it)->getHalfLength();
-            AABB searchbb(ct.x,ct.y,l*2.0);
-            std::vector<std::shared_ptr<Node> > res;
-            res.clear();
-            t->QueryRange(searchbb,res);
-            if (res.size()>0){
-                std::shared_ptr<OnGPIS> gp(new OnGPIS(setting.map_scale_param, setting.map_noise_param));
-                gp->train(res);
-                (*it)->Update(gp);
-            }
-        }
-    }
-    // clear active set once all the jobs for update are done.
-    activeSet.clear();
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[3] = time_collapsed.count();
-    return;
-}
-
 void GPisMap::updateGPs_kernel(int thread_idx,
                                int start_idx,
                                int end_idx,
@@ -675,7 +614,7 @@ void GPisMap::updateGPs_kernel(int thread_idx,
 
 }
 
-void GPisMap::updateGPs_mt(){
+void GPisMap::updateGPs(){
     t1= std::chrono::high_resolution_clock::now();
 
     std::unordered_set<QuadTree*> updateSet(activeSet);
@@ -747,106 +686,6 @@ void GPisMap::updateGPs_mt(){
     std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
     runtime[3] = time_collapsed.count();
     return;
-}
-
-bool GPisMap::test(  FLOAT * x, int dim, int leng, FLOAT * res){
-    if (x == 0 || dim != mapDimension || leng < 1)
-        return false;
-
-    FLOAT var_thre = 0.4; // TO-DO
-
-    // 2D only now
-    for (int k=0;k<leng;k++){ // look at Quatree.cpp ln.486
-        EVectorX xt(2);
-        xt << x[2*k], x[2*k+1];
-
-        int k6 = 6*k;
-
-        // query Cs
-        AABB searchbb(xt(0),xt(1), setting.map_scale_param*4.0);
-        std::vector<QuadTree*> quads;
-        std::vector<FLOAT>    sqdst;
-        t->QueryNonEmptyLevelC(searchbb,quads,sqdst);
-
-        res[k6+3] = 1.0 + setting.map_noise_param ; // variance of sdf value
-        if (quads.size() == 1){
-            Point<FLOAT> ct = quads[0]->getCenter();
-            std::shared_ptr<OnGPIS> gp = quads[0]->getGP();
-            if (gp != nullptr){
-                gp->test2Dpoint(xt,res[k6],res[k6+1],res[k6+2],res[k6+3],res[k6+4],res[k6+5]);
-            }
-        }
-        else if (sqdst.size() > 1){
-            // sort by distance
-            std::vector<int> idx(sqdst.size());
-            std::size_t n(0);
-            std::generate(std::begin(idx), std::end(idx), [&]{ return n++; });
-            std::sort(  std::begin(idx), std::end(idx),[&](int i1, int i2) { return sqdst[i1] < sqdst[i2]; } );
-
-            // get THE FIRST gp pointer
-             std::shared_ptr<OnGPIS> gp = quads[idx[0]]->getGP();
-            if (gp != nullptr){
-                gp->test2Dpoint(xt,res[k6],res[k6+1],res[k6+2],res[k6+3],res[k6+4],res[k6+5]);
-            }
-
-            if (res[k6+3] > var_thre){
-                FLOAT f2[4];
-                FLOAT grad2[4*2];
-                FLOAT var2[4*3];
-
-                var2[0] = res[k6+3];
-                int numc = sqdst.size();
-                if (numc > 3) numc = 3;
-                bool need_wsum = true;
-                for (int m=0; m<(numc-1);m++){
-                    int m_1 = m+1;
-                    int m2 = m_1*2;
-                    int m3 = m_1*3;
-                    gp = quads[idx[m_1]]->getGP();
-                    gp->test2Dpoint(xt,f2[m_1],grad2[m2],grad2[m2+1],var2[m3],var2[m3+1],var2[m3+2]);
-
-                }
-
-                if (need_wsum){
-                    f2[0] = res[k6];
-                    grad2[0] = res[k6+1];
-                    grad2[1] = res[k6+2];
-                    var2[1] = res[k6+4];
-                    var2[2] = res[k6+5];
-                    std::vector<int> idx(numc);
-                    std::size_t n(0);
-                    std::generate(std::begin(idx), std::end(idx), [&]{ return n++; });
-                    std::sort(  std::begin(idx), std::end(idx),[&](int i1, int i2) { return var2[i1*3] < var2[i2*3]; } );
-
-                    if (var2[idx[0]*3] < var_thre)
-                    {
-                        res[k6] = f2[idx[0]];
-                        res[k6+1] = grad2[idx[0]*2];
-                        res[k6+2] = grad2[idx[0]*2+1];
-                        res[k6+3] = var2[idx[0]*3];
-                        res[k6+4] = var2[idx[0]*3+1];
-                        res[k6+5] = var2[idx[0]*3+2];
-                    }
-                    else{
-                        FLOAT w1 = (var2[idx[0]*3] - var_thre);
-                        FLOAT w2 = (var2[idx[1]*3] - var_thre);
-
-                        FLOAT w12 = w1+w2;
-
-                        res[k6] = (w2*f2[idx[0]]+w1*f2[idx[1]])/w12;
-                        res[k6+1] = (w2*grad2[idx[0]*2]+w1*grad2[idx[1]*2])/w12;
-                        res[k6+2] = (w2*grad2[idx[0]*2+1]+w1*grad2[idx[1]*2+1])/w12;
-                        res[k6+3] = (w2*var2[idx[0]*3]+w1*var2[idx[1]*3])/w12;
-                        res[k6+4] = (w2*var2[idx[0]*3+1]+w1*var2[idx[1]*3+1])/w12;
-                        res[k6+5] = (w2*var2[idx[0]*3+2]+w1*var2[idx[1]*3+2])/w12;
-                    }
-
-                }
-            }
-        }
-    }
-
-    return true;
 }
 
 void GPisMap::test_kernel(int thread_idx,
@@ -949,7 +788,7 @@ void GPisMap::test_kernel(int thread_idx,
     }
 }
 
-bool GPisMap::test_mt(FLOAT * x, int dim, int leng, FLOAT * res){
+bool GPisMap::test(FLOAT * x, int dim, int leng, FLOAT * res){
     if (x == 0 || dim != mapDimension || leng < 1)
         return false;
 

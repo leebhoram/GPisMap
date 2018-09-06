@@ -97,7 +97,6 @@ public:
 
     virtual void train( FLOAT xt[],  FLOAT f[], int N[]) = 0;
     virtual void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) = 0;
-    virtual void test_mt(const EMatrixX& xt,EVectorX& val, EVectorX& var) = 0;
 };
 
 // This class implements ObsGP for 1D input.
@@ -121,7 +120,6 @@ public:
     // NOTE: In 1D, it must be f > 0.
     void train( FLOAT xt[],  FLOAT f[], int N[]) override;
     void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
-    void test_mt(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
 
 };
 
@@ -161,7 +159,6 @@ public:
     void train( FLOAT xt[],  FLOAT f[], int N[]) override;
     void train( FLOAT xt[],  FLOAT f[], int N[], std::vector<int> &numSamples);
     void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
-    void test_mt(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
 
 private:
     void test_kernel(int thread_idx,

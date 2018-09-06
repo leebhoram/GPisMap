@@ -187,9 +187,6 @@ void ObsGP1D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
     return;
 }
 
-void ObsGP1D::test_mt(const EMatrixX& xt,EVectorX& val, EVectorX& var){
-    return;
-}
 ///////////////////////////////////////////////////////////
 // ObsGP 2D
 ///////////////////////////////////////////////////////////
@@ -355,65 +352,6 @@ void ObsGP2D::train( FLOAT xt[],  FLOAT f[], int N[], std::vector<int>& numSampl
     return;
 }
 
-void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
-
-    if (!isTrained() || xt.rows() != 2){
-        return;
-    }
-
-    int N = xt.cols();
-
-    for (int k=0;k<N;k++){
-
-        EVectorX f = val.segment(k,1);
-        EVectorX v = var.segment(k,1);
-        var(k) = 1e6;
-        // find the corresponding group
-        if (xt(0,k) < *(Val_i.begin())+param.margin ){ // boundary 1
-            ;
-        }
-        else if (xt(0,k) > *(Val_i.end()-1)-param.margin){ // boundary 2
-            ;
-        }
-        else if (xt(1,k) < *(Val_j.begin())+param.margin ){ // boundary 1
-            ;
-        }
-        else if (xt(1,k) > *(Val_j.end()-1)-param.margin){ // boundary 2
-            ;
-        }
-        else{ // in-between
-            int n = 0;
-            for (auto it = (Val_i.begin()+1); it!=Val_i.end() ; it++,n++){
-                if (xt(0,k) < *it){
-                    break;
-                }
-            }
-
-            int m = 0;
-            for (auto it = (Val_j.begin()+1); it!=Val_j.end() ; it++,m++){
-                if (xt(1,k) < *it){
-                    break;
-                }
-            }
-
-            if (1){
-                int gp_ind = m*nGroup[0]+n;
-                if (gp_ind < gps.size() && gps[gp_ind] != nullptr){
-                    if (gps[gp_ind]->isTrained()){
-                        // and test
-                        gps[gp_ind]->test(xt.block(0,k,2,1), f,v);
-                        val(k) = f(0);
-                        var(k) = v(0);
-                    }
-                }
-            }
-        }
-    }
-
-
-    return;
-}
-
 void ObsGP2D::test_kernel(int thread_idx,
                           int start_idx,
                           int end_idx,
@@ -472,7 +410,7 @@ void ObsGP2D::test_kernel(int thread_idx,
     return;
 }
 
-void ObsGP2D::test_mt(const EMatrixX& xt,EVectorX& val, EVectorX& var){
+void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
 
     if (!isTrained() || xt.rows() != 2){
         return;

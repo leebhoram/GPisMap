@@ -84,7 +84,6 @@ protected:
     void evalPoints();
     void addNewMeas();
     void updateGPs();
-    void updateGPs_mt();
 
     ObsGP* gpo;
     std::vector<FLOAT> obs_theta;
@@ -106,9 +105,7 @@ public:
     void reset();
 
     void update(  FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
-    void update_mt(  FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
     bool test( FLOAT* x, int dim, int leng, FLOAT * res);
-    bool test_mt( FLOAT* x, int dim, int leng, FLOAT * res);
 
     int getMapDimension(){return mapDimension;}
     void getAllPoints(std::vector<FLOAT> & pos);
