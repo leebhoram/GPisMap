@@ -4,36 +4,33 @@
 #include "ObsGP.h"
 #include "OnGPIS.h"
 #include "quadtree.h"
-#include <chrono>
+#include "params.h"
 
 typedef struct GPisMapParam_{
-    FLOAT delx;         // numerical step delta (e.g. surface normal sampling)
-    FLOAT fbias;        // constant map bias values (mean of GP)
-    FLOAT sensor_offset[2];
-    FLOAT angle_obs_limit[2];
-    FLOAT obs_var_thre; // threshold for variance of ObsGP
+    float delx;         // numerical step delta (e.g. surface normal sampling)
+    float fbias;        // constant map bias values (mean of GP)
+    float sensor_offset[2];
+    float angle_obs_limit[2];
+    float obs_var_thre; // threshold for variance of ObsGP
                         //  - If var(prediction) > v_thre, then don't rely on the prediction.
-    FLOAT min_position_noise;
-    FLOAT min_grad_noise;
+    float min_position_noise;
+    float min_grad_noise;
 
-    FLOAT map_scale_param;
-    FLOAT map_noise_param;
-
-    int useCuda;
+    float map_scale_param;
+    float map_noise_param;
 
     GPisMapParam_(){
-        delx = 1e-2;
-        fbias = 0.2;
-        obs_var_thre = 0.1;
-        sensor_offset[0] = 0.08;
-        sensor_offset[1] = 0.0;
-        angle_obs_limit[0] = -135.0*M_PI/180.0;
-        angle_obs_limit[1] = 135.0*M_PI/180.0;
-        min_position_noise = 1e-2;
-        min_grad_noise = 1e-2;
-        map_scale_param = 1.2;
-        map_noise_param = 1e-2;
-        useCuda = 0;
+        delx = GPISMAP_DELX;
+        fbias = GPISMAP_FBIAS;
+        obs_var_thre = GPISMAP_OBS_VAR_THRE;
+        sensor_offset[0] = GPISMAP_SENSOR_OFFSET_0;
+        sensor_offset[1] = GPISMAP_SENSOR_OFFSET_1;
+        angle_obs_limit[0] = GPISMAP_ANGLE_OBS_LIMIT_0;
+        angle_obs_limit[1] = GPISMAP_ANGLE_OBS_LIMIT_1;
+        min_position_noise = GPISMAP_MIN_POS_NOISE;
+        min_grad_noise = GPISMAP_MIN_GRAD_NOISE;
+        map_scale_param = GPISMAP_MAP_SCALE;
+        map_noise_param = GPISMAP_MAP_NOISE;
     }
 
     GPisMapParam_( GPisMapParam_& par){
@@ -46,7 +43,6 @@ typedef struct GPisMapParam_{
         min_grad_noise = par.min_grad_noise;
         map_scale_param = par.map_scale_param;
         map_noise_param = par.map_noise_param;
-        useCuda = par.useCuda;
     }
 }GPisMapParam;
 
@@ -59,27 +55,24 @@ protected:
     const int mapDimension = 2;
 
     void init();
-    bool preproData( FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
+    bool preproData( float * datax,  float * dataf, int N, std::vector<float> & pose);
     bool regressObs();
     void updateMapPoints();
     void reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes);
     void evalPoints();
     void addNewMeas();
     void updateGPs();
-    void updateGPs_mt();
 
     ObsGP* gpo;
-    std::vector<FLOAT> obs_theta;
-    std::vector<FLOAT> obs_range;
-    std::vector<FLOAT> obs_f;
-    std::vector<FLOAT> obs_xylocal;
-    std::vector<FLOAT> obs_xyglobal;
-    std::vector<FLOAT> pose_tr;
-    std::vector<FLOAT> pose_R;
+    std::vector<float> obs_theta;
+    std::vector<float> obs_range;
+    std::vector<float> obs_f;
+    std::vector<float> obs_xylocal;
+    std::vector<float> obs_xyglobal;
+    std::vector<float> pose_tr;
+    std::vector<float> pose_R;
     int obs_numdata;
-    FLOAT range_obs_max;
-
-    double runtime[4];
+    float range_obs_max;
 
 public:
     GPisMap();
@@ -87,27 +80,17 @@ public:
     ~GPisMap();
     void reset();
 
-    void update(  FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
-    void update_mt(  FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
-    bool test( FLOAT* x, int dim, int leng, FLOAT * res);
-    bool test_mt( FLOAT* x, int dim, int leng, FLOAT * res);
+    void update(  float * datax,  float * dataf, int N, std::vector<float> & pose);
+    bool test( float* x, int dim, int leng, float * res);
 
     int getMapDimension(){return mapDimension;}
-    void getAllPoints(std::vector<FLOAT> & pos);
-    // void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var);
-    void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var, std::vector<FLOAT> &grad,  std::vector<FLOAT> &grad_var);
-
-    double getRuntime0(){return runtime[0];}
-    double getRuntime1(){return runtime[1];}
-    double getRuntime2(){return runtime[2];}
-    double getRuntime3(){return runtime[3];}
 
 private:
     void test_kernel(int thread_idx,
                      int start_idx,
                      int end_idx,
-                     FLOAT *x,
-                     FLOAT *res);
+                     float *x,
+                     float *res);
 
     void updateGPs_kernel(int thread_idx,
                           int start_idx,

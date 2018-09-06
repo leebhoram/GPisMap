@@ -11,13 +11,9 @@
 
 #include "strct.h"
 
-#ifdef __USE_DOUBLE_PRECISION__     // This is in use
-typedef Eigen::MatrixXd EMatrixX;
-typedef Eigen::VectorXd EVectorX;
-#else                               // For potential transition to float
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
-#endif
+
 
 //////////////////////////////////////////
 // Convariance matrix computation using the Ornstein-Uhlenbeck cov function.
@@ -28,13 +24,12 @@ typedef Eigen::VectorXf EVectorX;
 //////////////////////////////////////////
 
 // covariances for x1 (input points) with different noise params for inputs
-EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                           FLOAT scale_param, EVectorX const& sigx, EVectorX const& siggrad);
+EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
+                                           float scale_param, EVectorX const& sigx, EVectorX const& siggrad);
 
 // covariances for x1 (input points) and x2 (test points)
-EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                          EMatrixX const& x2, FLOAT scale_param);
-
+EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
+                                          EMatrixX const& x2, float scale_param);
 
 //////////////////////////////////////////
 // Convariance matrix computation using the Ornstein-Uhlenbeck cov function.
@@ -44,12 +39,12 @@ EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
 //////////////////////////////////////////
 
 // covariances for x1 (input points) with a constanct noise param
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, FLOAT sigx);
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, float sigx);
 
 // covariances for x1 (input points) with different noise params for inputs
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, EVectorX const& sigx);
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, EVectorX const& sigx);
 
 // covariances for x1 (input points) and x2 (test points)
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, FLOAT scale_param);
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, float scale_param);
 
 #endif

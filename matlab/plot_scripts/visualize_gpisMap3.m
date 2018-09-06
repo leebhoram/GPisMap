@@ -6,7 +6,7 @@ gcf_color = 'k';
 fig_visible = 'on';
 param.bias = 0.2; % This must be the same to xxxxx
 
-res  = mexGPisMap3('test-mt',xtest1);
+res  = mexGPisMap3('test',xtest1);
 fval = res(1,:);
 val = reshape(fval,size(xg))+param.bias;
 
@@ -51,7 +51,6 @@ xtest3 = single(xtest3);
 res3 = mexGPisMap3('test',xtest3);
 a3 = res3(1,:);
 
-
 h = surf(reshape(xtest2(1,:),size(xg2)),reshape(xtest2(2,:),size(xg2)),reshape(xtest2(3,:),size(xg2)));
 h.CData = reshape(a2+param.bias,size(yg2));
 h.EdgeColor = 'none';
@@ -70,5 +69,3 @@ view(-30,30);
 set(gca,'units','pixels','Position',[-50 -60 gcf_size+[100 100]]);
 drawnow;
 set(gcf,'Position',gcf_pose);
-
-

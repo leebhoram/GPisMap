@@ -1,8 +1,7 @@
 disp('drawing...');
 % Note: Displaying plots sometimes causes an (uknown) error.
 %       If you want to save the whole sequence,
-%       then start Matlab with the '-nodisplay' option (or
-%       add set(gcf,'visiable','off') before Ln. 21)
+%       then start Matlab with the '-nodisplay' option 
 %       and add codes that save the images in a folder.
 
 gp_bias = 0.2;
@@ -18,7 +17,6 @@ va = reshape(res(4,:),size(xg));
 % res(4,:) : var
 
 figure(1), hold off;
-% set(gcf,'visible','off');
 gcf_position = get(gcf,'Position');
 gcf_position(3:4) = [(xmax-xmin)*20+10 (ymax-ymin)*20+10];
 set(gcf,'Color','w','Position',gcf_position);
@@ -72,8 +70,6 @@ end
 % robot pose
 headpatch = patch( arr(1,:),arr(2,:),'w');
 set(headpatch, 'EdgeColor','r','LineWidth',2);
-plot(poses(initframe:skip:nframe,1),poses(initframe:skip:nframe,2),'r:','LineWidth',1);
+plot(poses(initframe:skip:nframe,1),poses(initframe:skip:nframe,2),'k-','LineWidth',1);
 drawnow;
 set(gcf,'Position',gcf_position);
-
-set(gcf,'visible','on');

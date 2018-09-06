@@ -1,36 +1,32 @@
 #include "GPisMap3.h"
 #include <chrono>
 #include <thread>
-//
-static FLOAT Rtimes = (FLOAT)2.0;
-static FLOAT C_leng = (FLOAT)0.025;
-tree_param OcTree::param = tree_param((FLOAT)(0.0125/2.0),(FLOAT)1.6,(FLOAT)0.4, C_leng);
-// Note: 1.6 = 0.0125*(2.0^7)
-//       0.4 = 0.0125*(2.0^5)
+#include "params.h"
 
-static std::chrono::high_resolution_clock::time_point t1;
-static std::chrono::high_resolution_clock::time_point t2;
+static float Rtimes = (float)GPISMAP3_RTIMES;
+static float C_leng = (float)GPISMAP3_TREE_CLUSTER_HALF_LENGTH;
+tree_param OcTree::param = tree_param((float) GPISMAP3_TREE_MIN_HALF_LENGTH,
+                                      (float) GPISMAP3_TREE_MAX_HALF_LENGTH,
+                                      (float) GPISMAP3_TREE_INIT_ROOT_HALF_LENGTH,
+                                      C_leng);
 
-#define MAX_RANGE   4e0
-#define MIN_RANGE   4e-1
-
-static inline bool isRangeValid(FLOAT r)
+static inline bool isRangeValid(float r)
 {
-    return (r < MAX_RANGE) &&  (r > MIN_RANGE);
+    return (r < GPISMAP3_MAX_RANGE) &&  (r > GPISMAP3_MIN_RANGE);
 }
 
-static inline FLOAT occ_test(FLOAT rinv, FLOAT rinv0, FLOAT a)
+static inline float occ_test(float rinv, float rinv0, float a)
 {
     return 2.0*(1.0/(1.0+exp(-a*(rinv-rinv0)))-0.5);
 }
 
-static inline FLOAT saturate(FLOAT val, FLOAT min_val, FLOAT max_val)
+static inline float saturate(float val, float min_val, float max_val)
 {
     return std::min(std::max(val,min_val),max_val);
 }
 
-static std::array<FLOAT,9> quat2dcm(FLOAT q[4]){
-    std::array<FLOAT,9> dcm;
+static std::array<float,9> quat2dcm(float q[4]){
+    std::array<float,9> dcm;
     dcm[0] = q[0]*q[0] + q[1]*q[1] - q[2]*q[2] - q[3]*q[3];
     dcm[1] = 2.0*(q[1]*q[2] + q[0]*q[3]);
     dcm[2] = 2.0*(q[1]*q[3] - q[0]*q[2]);
@@ -60,7 +56,6 @@ GPisMap3::GPisMap3(GPisMap3Param par):t(0),
 {
     init();
 }
-
 
 GPisMap3::GPisMap3(GPisMap3Param par, camParam c):t(0),
                                                   gpo(0),
@@ -107,7 +102,7 @@ void GPisMap3::resetCam(camParam c){
     return;
 }
 
-bool GPisMap3::preprocData(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
+bool GPisMap3::preprocData(float * dataz, int N, std::vector<float> & pose)
 {
     if (dataz == 0 || N < 1)
         return false;
@@ -146,15 +141,15 @@ bool GPisMap3::preprocData(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
             for (int m_ = 0; m_<m ; m_++){
                 row = m_*setting.obs_skip;
                 int j = 2*(m*n_+m_);
-                vu_grid[j] = (FLOAT(row) - cam.cy)/cam.fy;
-                vu_grid[j+1] = (FLOAT(col) - cam.cx)/cam.fx;
+                vu_grid[j] = (float(row) - cam.cy)/cam.fy;
+                vu_grid[j+1] = (float(col) - cam.cx)/cam.fx;
             }
         }
 
         u_obs_limit[0] = -cam.cx/cam.fx;
-        u_obs_limit[1] = (FLOAT(col)- cam.cx)/cam.fx;
+        u_obs_limit[1] = (float(col)- cam.cx)/cam.fx;
         v_obs_limit[0] = -cam.cy/cam.fy;
-        v_obs_limit[1] = (FLOAT(row)- cam.cy)/cam.fy;
+        v_obs_limit[1] = (float(row)- cam.cy)/cam.fy;
     }
 
     // pre-compute 3D cartesian every frame
@@ -173,9 +168,9 @@ bool GPisMap3::preprocData(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
                     range_obs_max = dataz[k];
 
                 obs_zinv.push_back(1.0/dataz[k]);
-                FLOAT xloc, yloc;
-                FLOAT u = vu_grid[j+1];
-                FLOAT v = vu_grid[j];
+                float xloc, yloc;
+                float u = vu_grid[j+1];
+                float v = vu_grid[j];
                 obs_valid_u.push_back(u);
                 obs_valid_v.push_back(v);
                 xloc = u*dataz[k];
@@ -200,7 +195,7 @@ bool GPisMap3::preprocData(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
     return false;
 }
 
-void GPisMap3::update(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
+void GPisMap3::update(float * dataz, int N, std::vector<float> & pose)
 {
     if (!preprocData(dataz,N,pose))
         return;
@@ -221,35 +216,12 @@ void GPisMap3::update(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
     return;
 }
 
-void GPisMap3::update_mt(FLOAT * dataz, int N, std::vector<FLOAT> & pose)
-{
-    if (!preprocData(dataz,N,pose))
-        return;
-
-    // Step 1
-    if (regressObs()){
-
-        // Step 2
-        updateMapPoints();
-
-        // Step 3
-        addNewMeas();
-
-        // Step 4
-        updateGPs_mt();
-
-    }
-    return;
-}
-
 bool GPisMap3::regressObs(){
 
-    t1= std::chrono::high_resolution_clock::now();
     int dim[2];
     if (gpo == 0){
         gpo = new ObsGP2D();
     }
-
 
     if (2*obs_zinv.size() != vu_grid.size())
         return false;
@@ -259,15 +231,12 @@ bool GPisMap3::regressObs(){
 
     gpo->reset();
     gpo->train(vu_grid.data(), obs_zinv.data(), dim);
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[0] = time_collapsed.count();
-
+  
     return gpo->isTrained();
 }
 
 void GPisMap3::updateMapPoints(){
-    t1= std::chrono::high_resolution_clock::now();
+   
     if (t!=0 && gpo !=0){
         AABB3 searchbb(pose_tr[0],pose_tr[1],pose_tr[2],range_obs_max);
         std::vector<OcTree*> oc;
@@ -275,19 +244,19 @@ void GPisMap3::updateMapPoints(){
 
         if (oc.size() > 0){
 
-            FLOAT r2 = range_obs_max*range_obs_max;
+            float r2 = range_obs_max*range_obs_max;
             int k=0;
             for (auto it = oc.begin(); it != oc.end(); it++, k++) {
 
-                Point3<FLOAT> ct = (*it)->getCenter();
-                FLOAT l = (*it)->getHalfLength();
-                FLOAT sqr_range = (ct.x-pose_tr[0])*(ct.x-pose_tr[0]) + (ct.y-pose_tr[1])*(ct.y-pose_tr[1])+(ct.z-pose_tr[2])*(ct.z-pose_tr[2]);
+                Point3<float> ct = (*it)->getCenter();
+                float l = (*it)->getHalfLength();
+                float sqr_range = (ct.x-pose_tr[0])*(ct.x-pose_tr[0]) + (ct.y-pose_tr[1])*(ct.y-pose_tr[1])+(ct.z-pose_tr[2])*(ct.z-pose_tr[2]);
 
                 if (sqr_range > (r2 + 2*l*l)){ // out_of_range
                     continue;
                 }
 
-                std::vector<Point3<FLOAT> > ext;
+                std::vector<Point3<float> > ext;
                 ext.push_back((*it)->getNWF());
                 ext.push_back((*it)->getNEF());
                 ext.push_back((*it)->getSWF());
@@ -299,14 +268,12 @@ void GPisMap3::updateMapPoints(){
 
                 int within_angle = 0;
                 for (auto it_ = ext.begin();it_ != ext.end(); it_++){
-                    FLOAT x_loc = pose_R[0]*((*it_).x-pose_tr[0])+pose_R[1]*((*it_).y-pose_tr[1])+pose_R[2]*((*it_).z-pose_tr[2]);
-                    FLOAT y_loc = pose_R[3]*((*it_).x-pose_tr[0])+pose_R[4]*((*it_).y-pose_tr[1])+pose_R[5]*((*it_).z-pose_tr[2]);
-                    FLOAT z_loc = pose_R[6]*((*it_).x-pose_tr[0])+pose_R[7]*((*it_).y-pose_tr[1])+pose_R[8]*((*it_).z-pose_tr[2]);
-                    //x_loc -= setting.sensor_offset[0];
-                    //y_loc -= setting.sensor_offset[1];
+                    float x_loc = pose_R[0]*((*it_).x-pose_tr[0])+pose_R[1]*((*it_).y-pose_tr[1])+pose_R[2]*((*it_).z-pose_tr[2]);
+                    float y_loc = pose_R[3]*((*it_).x-pose_tr[0])+pose_R[4]*((*it_).y-pose_tr[1])+pose_R[5]*((*it_).z-pose_tr[2]);
+                    float z_loc = pose_R[6]*((*it_).x-pose_tr[0])+pose_R[7]*((*it_).y-pose_tr[1])+pose_R[8]*((*it_).z-pose_tr[2]);
                     if (z_loc > 0){
-                        FLOAT xv = x_loc/z_loc;
-                        FLOAT yv = y_loc/z_loc;
+                        float xv = x_loc/z_loc;
+                        float yv = y_loc/z_loc;
 
                         int( (xv > u_obs_limit[0]) && (xv < u_obs_limit[1]) && ( yv > v_obs_limit[0]) && (yv < v_obs_limit[1]));
                     }
@@ -328,9 +295,6 @@ void GPisMap3::updateMapPoints(){
 
     }
 
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[1] = time_collapsed.count();
     return;
 }
 
@@ -340,20 +304,20 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
     EMatrixX vu(2,1);
     EVectorX rinv0(1);
     EVectorX var(1);
-    FLOAT ang = 0.0;
-    FLOAT rinv = 0.0;
+    float ang = 0.0;
+    float rinv = 0.0;
 
     // moving average weight
-    FLOAT w = 1.0/6.0;
+    float w = 1.0/6.0;
 
     // For each point
     for (auto it=nodes.begin(); it != nodes.end(); it++){
 
-        Point3<FLOAT> pos = (*it)->getPos();
+        Point3<float> pos = (*it)->getPos();
 
-        FLOAT x_loc = pose_R[0]*(pos.x-pose_tr[0])+pose_R[1]*(pos.y-pose_tr[1])+pose_R[2]*(pos.z-pose_tr[2]);
-        FLOAT y_loc = pose_R[3]*(pos.x-pose_tr[0])+pose_R[4]*(pos.y-pose_tr[1])+pose_R[5]*(pos.z-pose_tr[2]);
-        FLOAT z_loc = pose_R[6]*(pos.x-pose_tr[0])+pose_R[7]*(pos.y-pose_tr[1])+pose_R[8]*(pos.z-pose_tr[2]);
+        float x_loc = pose_R[0]*(pos.x-pose_tr[0])+pose_R[1]*(pos.y-pose_tr[1])+pose_R[2]*(pos.z-pose_tr[2]);
+        float y_loc = pose_R[3]*(pos.x-pose_tr[0])+pose_R[4]*(pos.y-pose_tr[1])+pose_R[5]*(pos.z-pose_tr[2]);
+        float z_loc = pose_R[6]*(pos.x-pose_tr[0])+pose_R[7]*(pos.y-pose_tr[1])+pose_R[8]*(pos.z-pose_tr[2]);
 
         if (z_loc < 0.0)
             continue;
@@ -368,26 +332,25 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         if (var(0) > setting.obs_var_thre)
             continue;
 
-
-        FLOAT oc = occ_test(rinv, rinv0(0), z_loc*30.0);
+        float oc = occ_test(rinv, rinv0(0), z_loc*30.0);
 
         // If unobservable, continue
         if (oc < -0.1) // TO-DO : set it as a parameter
             continue;
 
         // gradient in the local coord.
-        Point3<FLOAT> grad = (*it)->getGrad();
-        FLOAT grad_loc[3];
+        Point3<float> grad = (*it)->getGrad();
+        float grad_loc[3];
         grad_loc[0] = pose_R[0]*grad.x + pose_R[1]*grad.y + pose_R[2]*grad.z;
         grad_loc[1] = pose_R[3]*grad.x + pose_R[4]*grad.y + pose_R[5]*grad.z;
         grad_loc[3] = pose_R[6]*grad.x + pose_R[7]*grad.y + pose_R[8]*grad.z;
 
         /// Compute a new position
         // Iteratively move along the normal direction.
-        FLOAT abs_oc = fabs(oc);
-        FLOAT dx = setting.delx;
-        FLOAT x_new[3] = {x_loc, y_loc, z_loc};
-        FLOAT r_new = z_loc;
+        float abs_oc = fabs(oc);
+        float dx = setting.delx;
+        float x_new[3] = {x_loc, y_loc, z_loc};
+        float r_new = z_loc;
         for (int i=0; i<10 && abs_oc > 0.02; i++){ // TO-DO : set it as a parameter
             // move one step
             // (the direction is determined by the occupancy sign,
@@ -412,8 +375,8 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             if (var(0) > setting.obs_var_thre)
                 break;
             else{
-                FLOAT oc_new = occ_test(1.0/(r_new), rinv0(0), r_new*30.0);
-                FLOAT abs_oc_new = fabs(oc_new);
+                float oc_new = occ_test(1.0/(r_new), rinv0(0), r_new*30.0);
+                float abs_oc_new = fabs(oc_new);
 
                 if (abs_oc_new < 0.02 || oc < -0.1) // TO-DO : set it as a parameter
                     break;
@@ -428,13 +391,13 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         }
 
         // Compute its gradient and uncertainty
-        FLOAT Xperturb[6] = {1.0, -1.0, 0.0, 0.0, 0.0, 0.0};
-        FLOAT Yperturb[6] = {0.0, 0.0, 1.0, -1.0, 0.0, 0.0};
-        FLOAT Zperturb[6] = {0.0, 0.0, 0.0, 0.0, 1.0, -1.0};
-        FLOAT occ[6] = {-1.0,-1.0,-1.0,-1.0,-1.0,-1.0};
-        FLOAT occ_mean = 0.0;
-        FLOAT r0_mean = 0.0;
-        FLOAT r0_sqr_sum = 0.0;
+        float Xperturb[6] = {1.0, -1.0, 0.0, 0.0, 0.0, 0.0};
+        float Yperturb[6] = {0.0, 0.0, 1.0, -1.0, 0.0, 0.0};
+        float Zperturb[6] = {0.0, 0.0, 0.0, 0.0, 1.0, -1.0};
+        float occ[6] = {-1.0,-1.0,-1.0,-1.0,-1.0,-1.0};
+        float occ_mean = 0.0;
+        float r0_mean = 0.0;
+        float r0_sqr_sum = 0.0;
 
         for (int i=0; i<6; i++){
             Xperturb[i] = x_new[0] + setting.delx*Xperturb[i];
@@ -452,31 +415,30 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             }
             occ[i] = occ_test(1.0/r_new, rinv0(0), r_new*30.0);
             occ_mean += w*occ[i];
-            FLOAT r0 = 1.0/rinv0(0);
+            float r0 = 1.0/rinv0(0);
             r0_sqr_sum += r0*r0;
             r0_mean += w*r0;
         }
 
-
         if (var(0) > setting.obs_var_thre)// invalid
             continue;
 
-        Point3<FLOAT> grad_new_loc,grad_new;
+        Point3<float> grad_new_loc,grad_new;
 
         grad_new_loc.x = (occ[0] -occ[1])/setting.delx;
         grad_new_loc.y = (occ[2] -occ[3])/setting.delx;
         grad_new_loc.z = (occ[4] -occ[5])/setting.delx;
-        FLOAT norm_grad_new = std::sqrt(grad_new_loc.x*grad_new_loc.x + grad_new_loc.y*grad_new_loc.y + grad_new_loc.z*grad_new_loc.z);
+        float norm_grad_new = std::sqrt(grad_new_loc.x*grad_new_loc.x + grad_new_loc.y*grad_new_loc.y + grad_new_loc.z*grad_new_loc.z);
 
         if (norm_grad_new <1e-3){ // uncertainty increased
             (*it)->updateNoise(2.0*(*it)->getPosNoise(),2.0*(*it)->getGradNoise());
             continue;
         }
 
-        FLOAT r_var = r0_sqr_sum/5.0 - r0_mean*r0_mean*6.0/5.0;
+        float r_var = r0_sqr_sum/5.0 - r0_mean*r0_mean*6.0/5.0;
         r_var /= setting.delx;
-        FLOAT noise = 100.0;
-        FLOAT grad_noise = 1.0;
+        float noise = 100.0;
+        float grad_noise = 1.0;
         if (norm_grad_new > 1e-6){
             grad_new_loc.x = grad_new_loc.x/norm_grad_new;
             grad_new_loc.y = grad_new_loc.y/norm_grad_new;
@@ -488,19 +450,17 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             noise = setting.min_position_noise*noise;
         }
 
+        float dist = std::sqrt(x_new[0]*x_new[0]+x_new[1]*x_new[1]+x_new[2]*x_new[2]);
+        float view_ang = std::max(-(x_new[0]*grad_new_loc.x+x_new[1]*grad_new_loc.y+x_new[2]*grad_new_loc.z)/dist, (float)1e-1);
+        float view_ang2 = view_ang*view_ang;
+        float view_noise = setting.min_position_noise*((1.0-view_ang2)/view_ang2);
 
-        FLOAT dist = std::sqrt(x_new[0]*x_new[0]+x_new[1]*x_new[1]+x_new[2]*x_new[2]);
-        FLOAT view_ang = std::max(-(x_new[0]*grad_new_loc.x+x_new[1]*grad_new_loc.y+x_new[2]*grad_new_loc.z)/dist, (FLOAT)1e-1);
-        FLOAT view_ang2 = view_ang*view_ang;
-        FLOAT view_noise = setting.min_position_noise*((1.0-view_ang2)/view_ang2);
-
-        FLOAT temp = noise;
+        float temp = noise;
         noise += view_noise + abs_oc;
         grad_noise = grad_noise + 0.1*view_noise;
 
-
         // local to global coord.
-        Point3<FLOAT> pos_new;
+        Point3<float> pos_new;
         pos_new.x = pose_R[0]*x_new[0] + pose_R[3]*x_new[1] + pose_R[6]*x_new[2] + pose_tr[0];
         pos_new.y = pose_R[1]*x_new[0] + pose_R[4]*x_new[1] + pose_R[7]*x_new[2] + pose_tr[1];
         pos_new.z = pose_R[2]*x_new[0] + pose_R[5]*x_new[1] + pose_R[8]*x_new[2] + pose_tr[2];
@@ -508,12 +468,11 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         grad_new.y = pose_R[1]*grad_new_loc.x + pose_R[4]*grad_new_loc.y + pose_R[7]*grad_new_loc.z;
         grad_new.z = pose_R[2]*grad_new_loc.x + pose_R[5]*grad_new_loc.y + pose_R[8]*grad_new_loc.z;
 
-        FLOAT noise_old = (*it)->getPosNoise();
-        FLOAT grad_noise_old = (*it)->getGradNoise();
+        float noise_old = (*it)->getPosNoise();
+        float grad_noise_old = (*it)->getGradNoise();
 
-        FLOAT pos_noise_sum = (noise_old + noise);
-        FLOAT grad_noise_sum = (grad_noise_old + grad_noise);
-
+        float pos_noise_sum = (noise_old + noise);
+        float grad_noise_sum = (grad_noise_old + grad_noise);
 
          // Now, update
         if (grad_noise_old > 0.5 || grad_noise_old > 0.6){
@@ -524,33 +483,33 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             pos_new.x = (noise*pos.x + noise_old*pos_new.x)/pos_noise_sum;
             pos_new.y = (noise*pos.y + noise_old*pos_new.y)/pos_noise_sum;
             pos_new.z = (noise*pos.z + noise_old*pos_new.z)/pos_noise_sum;
-            FLOAT dist = 0.5*std::sqrt((pos.x-pos_new.x)*(pos.x-pos_new.x) + (pos.y-pos_new.y)*(pos.y-pos_new.y) + (pos.z-pos_new.z)*(pos.z-pos_new.z));
+            float dist = 0.5*std::sqrt((pos.x-pos_new.x)*(pos.x-pos_new.x) + (pos.y-pos_new.y)*(pos.y-pos_new.y) + (pos.z-pos_new.z)*(pos.z-pos_new.z));
 
             // Normal update
-            Point3<FLOAT> axis; // cross product
+            Point3<float> axis; // cross product
             axis.x =  grad_new.y*grad.z - grad_new.z*grad.y;
             axis.y = -grad_new.x*grad.z + grad_new.z*grad.x;
             axis.z =  grad_new.x*grad.y - grad_new.y*grad.x;
-            FLOAT ang = acos(grad_new.x*grad.x+grad_new.y*grad.y+grad_new.z*grad.z);
+            float ang = acos(grad_new.x*grad.x+grad_new.y*grad.y+grad_new.z*grad.z);
             ang = ang*noise/pos_noise_sum;
             // rotvect
-            FLOAT q[4] = {1.0, 0.0, 0.0, 0.0};
+            float q[4] = {1.0, 0.0, 0.0, 0.0};
             if (ang > 1-6){
                 q[0] = cos(ang/2.0);
-                FLOAT sina = sin(ang/2.0);
+                float sina = sin(ang/2.0);
                 q[1] = axis.x*sina;
                 q[2] = axis.y*sina;
                 q[3] = axis.z*sina;
             }
             // quat 2 dcm
-            std::array<FLOAT,9> Rot = quat2dcm(q);
+            std::array<float,9> Rot = quat2dcm(q);
 
             grad_new.x = Rot[0]*grad.x + Rot[1]*grad.y + Rot[2]*grad.z;
             grad_new.y = Rot[3]*grad.x + Rot[4]*grad.y + Rot[5]*grad.z;
             grad_new.z = Rot[6]*grad.x + Rot[7]*grad.y + Rot[8]*grad.z;
 
             // Noise update
-            grad_noise = std::min((FLOAT)1.0, std::max(grad_noise*grad_noise_old/grad_noise_sum + dist, setting.map_noise_param));
+            grad_noise = std::min((float)1.0, std::max(grad_noise*grad_noise_old/grad_noise_sum + dist, setting.map_noise_param));
             noise = std::max((noise*noise_old/pos_noise_sum + dist), setting.map_noise_param);
         }
         // remove
@@ -592,19 +551,18 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
 void GPisMap3::addNewMeas(){
     // create if not initialized
     if (t == 0){
-        t = new OcTree(Point3<FLOAT>(0.0,0.0,0.0));
+        t = new OcTree(Point3<float>(0.0,0.0,0.0));
     }
     evalPoints();
     return;
 }
 
 void GPisMap3::evalPoints(){
-
-    t1= std::chrono::high_resolution_clock::now();
+  
      if (t == 0 || obs_numdata < 1)
          return;
 
-    FLOAT w = 1.0/6.0;
+    float w = 1.0/6.0;
     int k=0;
     // For each point
     for (; k<obs_numdata; k++){
@@ -627,7 +585,7 @@ void GPisMap3::evalPoints(){
 
         /////////////////////////////////////////////////////////////////
         // Try inserting
-        Point3<FLOAT> pt(obs_valid_xyzglobal[k3],obs_valid_xyzglobal[k3+1],obs_valid_xyzglobal[k3+2]);
+        Point3<float> pt(obs_valid_xyzglobal[k3],obs_valid_xyzglobal[k3+1],obs_valid_xyzglobal[k3+2]);
         std::shared_ptr<Node3> p(new Node3(pt));
         std::unordered_set<OcTree*> vecInserted;
 
@@ -641,23 +599,21 @@ void GPisMap3::evalPoints(){
             }
         }
 
-
         if ((succeeded == 0) || !(vecInserted.size() > 0)) // if failed, then continue to test the next point
             continue;
 
         /////////////////////////////////////////////////////////////////
         // if succeeded, then compute surface normal and uncertainty
-        FLOAT Xperturb[6] = {1.0, -1.0, 0.0, 0.0, 0.0, 0.0};
-        FLOAT Yperturb[6] = {0.0, 0.0, 1.0, -1.0, 0.0, 0.0};
-        FLOAT Zperturb[6] = {0.0, 0.0, 0.0, 0.0, 1.0, -1.0};
-        FLOAT occ[6] = {-1.0,-1.0,-1.0,-1.0,-1.0,-1.0};
-        FLOAT occ_mean = 0.0;
+        float Xperturb[6] = {1.0, -1.0, 0.0, 0.0, 0.0, 0.0};
+        float Yperturb[6] = {0.0, 0.0, 1.0, -1.0, 0.0, 0.0};
+        float Zperturb[6] = {0.0, 0.0, 0.0, 0.0, 1.0, -1.0};
+        float occ[6] = {-1.0,-1.0,-1.0,-1.0,-1.0,-1.0};
+        float occ_mean = 0.0;
         int i=0;
         for (; i<6; i++){
             Xperturb[i] = obs_valid_xyzlocal[k3] + setting.delx*Xperturb[i];
             Yperturb[i] = obs_valid_xyzlocal[k3+1] + setting.delx*Yperturb[i];
             Zperturb[i] = obs_valid_xyzlocal[k3+2] + setting.delx*Zperturb[i];
-
 
             vu(0,0) = Yperturb[i]/Zperturb[i];
             vu(1,0) = Xperturb[i]/Zperturb[i];
@@ -673,38 +629,36 @@ void GPisMap3::evalPoints(){
         }
 
         if (var(0) > setting.obs_var_thre){
-            //std::cout << "Removing...." << var(0) << std::endl;
             t->Remove(p);
             continue;
         }
 
-
-        FLOAT noise = 100.0;
-        FLOAT grad_noise = 1.00;
-        Point3<FLOAT> grad;
+        float noise = 100.0;
+        float grad_noise = 1.00;
+        Point3<float> grad;
 
         grad.x = (occ[0] -occ[1])/setting.delx;
         grad.y = (occ[2] -occ[3])/setting.delx;
         grad.z = (occ[4] -occ[5])/setting.delx;
-        FLOAT norm_grad = grad.x*grad.x + grad.y*grad.y + grad.z*grad.z;
+        float norm_grad = grad.x*grad.x + grad.y*grad.y + grad.z*grad.z;
 
         if (norm_grad > 1e-6){
             norm_grad = std::sqrt(norm_grad);
-            FLOAT grad_loc_x = grad.x/norm_grad;
-            FLOAT grad_loc_y = grad.y/norm_grad;
-            FLOAT grad_loc_z = grad.z/norm_grad;
+            float grad_loc_x = grad.x/norm_grad;
+            float grad_loc_y = grad.y/norm_grad;
+            float grad_loc_z = grad.z/norm_grad;
 
             grad.x = pose_R[0]*grad_loc_x + pose_R[3]*grad_loc_y + pose_R[6]*grad_loc_z;
             grad.y = pose_R[1]*grad_loc_x + pose_R[4]*grad_loc_y + pose_R[7]*grad_loc_z;
             grad.z = pose_R[2]*grad_loc_x + pose_R[5]*grad_loc_y + pose_R[8]*grad_loc_z;
 
-            FLOAT dist = std::sqrt(obs_valid_xyzlocal[k3]*obs_valid_xyzlocal[k3]+obs_valid_xyzlocal[k3+1]*obs_valid_xyzlocal[k3+1]+obs_valid_xyzlocal[k3+2]*obs_valid_xyzlocal[k3+2]);
+            float dist = std::sqrt(obs_valid_xyzlocal[k3]*obs_valid_xyzlocal[k3]+obs_valid_xyzlocal[k3+1]*obs_valid_xyzlocal[k3+1]+obs_valid_xyzlocal[k3+2]*obs_valid_xyzlocal[k3+2]);
             noise = setting.min_position_noise*(saturate(dist, 1.0, noise));
             grad_noise = saturate(std::fabs(occ_mean),setting.min_grad_noise,grad_noise);
 
-            FLOAT view_ang = std::max(-(obs_valid_xyzlocal[k3]*grad_loc_x+obs_valid_xyzlocal[k3+1]*grad_loc_y +obs_valid_xyzlocal[k3+2]*grad_loc_z)/dist, (FLOAT)1e-1);
-            FLOAT view_ang2 = view_ang*view_ang;
-            FLOAT view_noise = setting.min_position_noise*((1.0-view_ang2)/view_ang2);
+            float view_ang = std::max(-(obs_valid_xyzlocal[k3]*grad_loc_x+obs_valid_xyzlocal[k3+1]*grad_loc_y +obs_valid_xyzlocal[k3+2]*grad_loc_z)/dist, (float)1e-1);
+            float view_ang2 = view_ang*view_ang;
+            float view_noise = setting.min_position_noise*((1.0-view_ang2)/view_ang2);
             noise += view_noise;
         }
 
@@ -717,60 +671,7 @@ void GPisMap3::evalPoints(){
         }
 
     }
-
-//     t->printNodes();
-//     std::cout << "temp_skipped_count : " << temp_skipped_count << std::endl;
-//    std::cout << t->getNodeCount() << " points are in the map" << std::endl;
-//    std::cout << "Active set size: " << activeSet.size() << std::endl;
-   //t->printBoundary();
-
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[2] = time_collapsed.count();
-    return;
-}
-
-void GPisMap3::updateGPs(){
-    t1= std::chrono::high_resolution_clock::now();
-    int k = 0;
-
-   // std::cout << "activeSet.size() : " << activeSet.size() << std::endl;
-    std::unordered_set<OcTree*> updateSet(activeSet);
-    for (auto it = activeSet.begin(); it!= activeSet.end(); it++){
-
-        Point3<FLOAT> ct = (*it)->getCenter();
-        FLOAT l = (*it)->getHalfLength();
-        AABB3 searchbb(ct.x,ct.y,ct.z, Rtimes*l);
-        std::vector<OcTree*> qs;
-        t->QueryNonEmptyLevelC(searchbb,qs);
-        if (qs.size()>0){
-            for (auto itq = qs.begin(); itq!=qs.end(); itq++){
-                updateSet.insert(*itq);
-            }
-        }
-    }
-
-  //s  std::cout << "updateSet.size() : " << activeSet.size() << std::endl;
-    std::vector<std::shared_ptr<Node3> > res;
-    for (auto it = updateSet.begin(); it!= updateSet.end(); it++){
-        if ((*it) != 0){
-            Point3<FLOAT> ct = (*it)->getCenter();
-            FLOAT l = (*it)->getHalfLength();
-            AABB3 searchbb(ct.x,ct.y,ct.z, l*Rtimes);
-            res.clear();
-            t->QueryRange(searchbb,res);
-            if (res.size()>0){
-                std::shared_ptr<OnGPIS> gp(new OnGPIS(setting.map_scale_param, setting.map_noise_param));
-                gp->train(res);
-                (*it)->Update(gp);
-            }
-        }
-    }
-    // clear active set once all the jobs for update are done.
-    activeSet.clear();
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[3] = time_collapsed.count();
+ 
     return;
 }
 
@@ -779,11 +680,10 @@ void GPisMap3::updateGPs_kernel(int thread_idx,
                                 int end_idx,
                                 OcTree **nodes_to_update){
     std::vector<std::shared_ptr<Node3> > res;
-    /* for (auto it = updateSet.begin(); it!= updateSet.end(); it++){ */
     for (int i = start_idx; i < end_idx; ++i){
         if (nodes_to_update[i] != 0){
-            Point3<FLOAT> ct = (nodes_to_update[i])->getCenter();
-            FLOAT l = (nodes_to_update[i])->getHalfLength();
+            Point3<float> ct = (nodes_to_update[i])->getCenter();
+            float l = (nodes_to_update[i])->getHalfLength();
             AABB3 searchbb(ct.x,ct.y,ct.z, l*Rtimes);
             res.clear();
             t->QueryRange(searchbb,res);
@@ -797,9 +697,8 @@ void GPisMap3::updateGPs_kernel(int thread_idx,
 
 }
 
-void GPisMap3::updateGPs_mt(){
-    t1= std::chrono::high_resolution_clock::now();
-
+void GPisMap3::updateGPs(){
+    
     std::unordered_set<OcTree*> updateSet(activeSet);
 
     int num_threads = std::thread::hardware_concurrency();
@@ -809,8 +708,8 @@ void GPisMap3::updateGPs_mt(){
 
     for (auto it = activeSet.begin(); it!= activeSet.end(); it++){
 
-        Point3<FLOAT> ct = (*it)->getCenter();
-        FLOAT l = (*it)->getHalfLength();
+        Point3<float> ct = (*it)->getCenter();
+        float l = (*it)->getHalfLength();
         AABB3 searchbb(ct.x,ct.y,ct.z, Rtimes*l);
         std::vector<OcTree*> qs;
         t->QueryNonEmptyLevelC(searchbb,qs);
@@ -865,128 +764,17 @@ void GPisMap3::updateGPs_mt(){
     delete [] threads;
     // clear active set once all the jobs for update are done.
     activeSet.clear();
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[3] = time_collapsed.count();
+
     return;
-}
-
-bool GPisMap3::test(FLOAT * x, int dim, int leng, FLOAT * res){
-    if (x == 0 || dim != mapDimension || leng < 1)
-        return false;
-
-    FLOAT var_thre = 0.05; // TO-DO
-
-    for (int k=0;k<leng;k++){
-        int k3 = 3*k;
-        EVectorX xt(3);
-        xt << x[k3], x[k3+1], x[k3+2];
-
-        int k8 = 8*k;
-
-        // query Cs
-        AABB3 searchbb(xt(0),xt(1),xt(2),C_leng*Rtimes);
-        std::vector<OcTree*> quads;
-        std::vector<FLOAT> sqdst;
-        t->QueryNonEmptyLevelC(searchbb,quads,sqdst);
-
-        res[k8+4] = 1.0 + setting.map_noise_param ; // variance of sdf value
-
-        if (quads.size() == 1){
-            //Point3<FLOAT> ct = quads[0]->getCenter();
-            std::shared_ptr<OnGPIS> gp = quads[0]->getGP();
-            if (gp != nullptr){
-                gp->testSinglePoint(xt,res[k8],&res[k8+1],&res[k8+4]);
-            }
-        }
-        else if (sqdst.size() > 1){
-            // sort by distance
-            std::vector<int> idx(sqdst.size());
-            std::size_t n(0);
-            std::generate(std::begin(idx), std::end(idx), [&]{ return n++; });
-            std::sort(  std::begin(idx), std::end(idx),[&](int i1, int i2) { return sqdst[i1] < sqdst[i2]; } );
-
-//             // get THE FIRST gp pointer
-            std::shared_ptr<OnGPIS> gp = quads[idx[0]]->getGP();
-            if (gp != nullptr){
-                gp->testSinglePoint(xt,res[k8],&res[k8+1],&res[k8+4]);
-            }
-
-            if (res[k8+4] > var_thre){
-
-                FLOAT f2[8];
-                FLOAT grad2[8*3];
-                FLOAT var2[8*4];
-
-                var2[0] = res[k8+4];
-                int numc = sqdst.size();
-                if (numc > 3) numc = 3;
-                bool need_wsum = true;
-
-                for (int m=0; m<(numc-1);m++){
-                    int m_1 = m+1;
-                    int m3 = m_1*3;
-                    int m4 = m_1*4;
-                    gp = quads[idx[m_1]]->getGP();
-                    gp->testSinglePoint(xt,f2[m_1],&grad2[m3],&var2[m4]);
-                }
-
-                if (need_wsum){
-                    f2[0] = res[k8];
-                    grad2[0] = res[k8+1];
-                    grad2[1] = res[k8+2];
-                    grad2[2] = res[k8+3];
-                    //var2[0] = res[k8+4];
-                    var2[1] = res[k8+5];
-                    var2[2] = res[k8+6];
-                    var2[3] = res[k8+7];
-                    std::vector<int> idx(numc);
-                    std::size_t n(0);
-                    std::generate(std::begin(idx), std::end(idx), [&]{ return n++; });
-                    std::sort(  std::begin(idx), std::end(idx),[&](int i1, int i2) { return var2[i1*4] < var2[i2*4]; } );
-
-                    if (var2[idx[0]*4] < var_thre)
-                    {
-                        res[k8] = f2[idx[0]];
-                        res[k8+1] = grad2[idx[0]*3];
-                        res[k8+2] = grad2[idx[0]*3+1];
-                        res[k8+3] = grad2[idx[0]*3+2];
-
-                        res[k8+4] = var2[idx[0]*4];
-                        res[k8+5] = var2[idx[0]*4+1];
-                        res[k8+6] = var2[idx[0]*4+2];
-                        res[k8+7] = var2[idx[0]*4+3];
-                    }
-                    else{
-                        FLOAT w1 = (var2[idx[0]*4] - var_thre);
-                        FLOAT w2 = (var2[idx[1]*4]- var_thre);
-                        FLOAT w12 = w1+w2;
-
-                        res[k8] = (w2*f2[idx[0]]+w1*f2[idx[1]])/w12;
-                        res[k8+1] = (w2*grad2[idx[0]*3]+w1*grad2[idx[1]*3])/w12;
-                        res[k8+2] = (w2*grad2[idx[0]*3+1]+w1*grad2[idx[1]*3+1])/w12;
-                        res[k8+3] = (w2*grad2[idx[0]*3+2]+w1*grad2[idx[1]*3+2])/w12;
-
-                        res[k8+4] = (w2*var2[idx[0]*4]+w1*var2[idx[1]*4])/w12;
-                        res[k8+5] = (w2*var2[idx[0]*4+1]+w1*var2[idx[1]*4+1])/w12;
-                        res[k8+6] = (w2*var2[idx[0]*4+2]+w1*var2[idx[1]*4+2])/w12;
-                        res[k8+7] = (w2*var2[idx[0]*4+3]+w1*var2[idx[1]*4+3])/w12;
-                    }
-                }
-            }
-        }
-    }
-
-    return true;
 }
 
 void GPisMap3::test_kernel(int thread_idx,
                            int start_idx,
                            int end_idx,
-                           FLOAT *x,
-                           FLOAT *res){
+                           float *x,
+                           float *res){
 
-    FLOAT var_thre = 0.5; // TO-DO
+    float var_thre = 0.5; // TO-DO
 
     for(int i = start_idx; i < end_idx; ++i){
 
@@ -999,13 +787,12 @@ void GPisMap3::test_kernel(int thread_idx,
         // query Cs
         AABB3 searchbb(xt(0),xt(1),xt(2),C_leng*3.0);
         std::vector<OcTree*> quads;
-        std::vector<FLOAT> sqdst;
+        std::vector<float> sqdst;
         t->QueryNonEmptyLevelC(searchbb,quads,sqdst);
 
         res[k8+4] = 1.0 + setting.map_noise_param ; // variance of sdf value
 
         if (quads.size() == 1){
-            //Point3<FLOAT> ct = quads[0]->getCenter();
             std::shared_ptr<OnGPIS> gp = quads[0]->getGP();
             if (gp != nullptr){
                 gp->testSinglePoint(xt,res[k8],&res[k8+1],&res[k8+4]);
@@ -1026,9 +813,9 @@ void GPisMap3::test_kernel(int thread_idx,
 
             if (res[k8+4] > var_thre){
 
-                FLOAT f2[8];
-                FLOAT grad2[8*3];
-                FLOAT var2[8*4];
+                float f2[8];
+                float grad2[8*3];
+                float var2[8*4];
 
                 var2[0] = res[k8+4];
                 int numc = sqdst.size();
@@ -1048,7 +835,6 @@ void GPisMap3::test_kernel(int thread_idx,
                     grad2[0] = res[k8+1];
                     grad2[1] = res[k8+2];
                     grad2[2] = res[k8+3];
-                    //var2[0] = res[k8+4];
                     var2[1] = res[k8+5];
                     var2[2] = res[k8+6];
                     var2[3] = res[k8+7];
@@ -1070,9 +856,9 @@ void GPisMap3::test_kernel(int thread_idx,
                         res[k8+7] = var2[idx[0]*4+3];
                     }
                     else{
-                        FLOAT w1 = (var2[idx[0]*4] - var_thre);
-                        FLOAT w2 = (var2[idx[1]*4]- var_thre);
-                        FLOAT w12 = w1+w2;
+                        float w1 = (var2[idx[0]*4] - var_thre);
+                        float w2 = (var2[idx[1]*4]- var_thre);
+                        float w12 = w1+w2;
 
                         res[k8] = (w2*f2[idx[0]]+w1*f2[idx[1]])/w12;
                         res[k8+1] = (w2*grad2[idx[0]*3]+w1*grad2[idx[1]*3])/w12;
@@ -1092,7 +878,7 @@ void GPisMap3::test_kernel(int thread_idx,
 
 }
 
-bool GPisMap3::test_mt(FLOAT * x, int dim, int leng, FLOAT * res){
+bool GPisMap3::test(float * x, int dim, int leng, float * res){
     if (x == 0 || dim != mapDimension || leng < 1)
         return false;
 
@@ -1138,27 +924,3 @@ bool GPisMap3::test_mt(FLOAT * x, int dim, int leng, FLOAT * res){
 
     return true;
 }
-
-void GPisMap3::getAllPoints(std::vector<FLOAT> & pos)
-{
-    pos.clear();
-
-    if (t==0)
-        return;
-
-    std::vector<std::shared_ptr<Node3> > nodes;
-    t->getAllChildrenNonEmptyNodes(nodes);
-
-    int N = nodes.size();
-    if (N> 0){
-        pos.resize(3*N);
-        for (int j=0; j<N; j++) {
-            int j3 = 3*j;
-            pos[j3] = nodes[j]->getPosX();
-            pos[j3+1] = nodes[j]->getPosY();
-            pos[j3+2] = nodes[j]->getPosZ();
-        }
-    }
-    return;
-}
-

@@ -2,16 +2,16 @@
 
 #define EPS 1e-12
 
-static FLOAT sqdist(const Point3<FLOAT>& pt1, const Point3<FLOAT>& pt2)
+static float sqdist(const Point3<float>& pt1, const Point3<float>& pt2)
 {
-    FLOAT dx = (pt1.x - pt2.x);
-    FLOAT dy = (pt1.y - pt2.y);
-    FLOAT dz = (pt1.z - pt2.z);
+    float dx = (pt1.x - pt2.x);
+    float dy = (pt1.y - pt2.y);
+    float dz = (pt1.z - pt2.z);
 
     return dx*dx + dy*dy + dz*dz;
 }
 
-OcTree::OcTree(Point3<FLOAT> c)
+OcTree::OcTree(Point3<float> c)
         :northWestFront(0),
          northEastFront(0),
          southWestFront(0),
@@ -55,9 +55,6 @@ OcTree::OcTree(AABB3 _boundary, OcTree* const p )
         rootLimitReached = true;
     if (p!=0)
         par = p;
-
-    //Point3<FLOAT> c = boundary.getCenter();
-    //std::cout << "QuadTree constructed. (" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" <<std::endl;
 }
 
 OcTree::OcTree(AABB3 _boundary,  OcTree* const ch,  int child_type)
@@ -107,9 +104,7 @@ OcTree::OcTree(AABB3 _boundary,  OcTree* const ch,  int child_type)
             southEastBack = ch;
     }
 
-    //std::cout<< "Chile Type: " << child_type << std::endl;
-    Point3<FLOAT> c = boundary.getCenter();
-    //std::cout << "Root QuadTree constructed. (" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" <<std::endl;
+    Point3<float> c = boundary.getCenter();
 }
 
 void OcTree::deleteChildren()
@@ -135,18 +130,13 @@ OcTree* const OcTree::getRoot(){
 }
 
 bool OcTree::InsertToParent(std::shared_ptr<Node3> n){
-    FLOAT l = getHalfLength();
-    Point3<FLOAT> c = getCenter();
-
-    //std::cout << "InsertToParent.... " << std::endl;
-
+    float l = getHalfLength();
+    Point3<float> c = getCenter();
 
     // Find out what type the current node is
-    const Point3<FLOAT> np = n->getPos();
+    const Point3<float> np = n->getPos();
 
-     //std::cout << "inserting: " << np.x << ", " << np.y << std::endl;
-
-    Point3<FLOAT> par_c;
+    Point3<float> par_c;
     int childType = 0;
     if (np.x < c.x && np.y > c.y && np.z > c.z){
         childType = CHILD_TYPE_SEB;
@@ -210,12 +200,10 @@ bool OcTree::Insert(std::shared_ptr<Node3> n){
             if (rootLimitReached)  return false;
             else                   return InsertToParent(n);
         }
-        //else  std::cout << "object cannot be added" << std::endl;
         return false; // object cannot be added
     }
 
     if (maxDepthReached){
-        //std::cout << "Max. Depth Reached " << std::endl;
         if (node == nullptr) {// If this is the first point in this quad tree, add the object here
             node = n;
             numNodes = 1;
@@ -225,27 +213,22 @@ bool OcTree::Insert(std::shared_ptr<Node3> n){
             return false;
     }
 
-    //std::cout << "IsLeaf() == " << IsLeaf() << ", " << leaf << std::endl;
     if (IsLeaf()){
 
         if (boundary.getHalfLength() > OcTree::param.cluster_halfleng){
             Subdivide();
         }
         else{
-            //std::cout << "Is node empty?: " << (node == nullptr) << std::endl;
             if (node == nullptr)
             // If this is the first point in this quad tree, add the object here
             {
-               // std::cout << "the first point inserted" << std::endl;
                 node = n;
                 numNodes = 1;
                 return true;
             }
 
             // Otherwise, subdivide and then add the point to whichever node will accept it
-            //numNodes = 0;
             if (sqdist(node->getPos(), n->getPos()) < OcTree::param.min_halfleng_sqr){
-                //std::cout << "cannot add (Max. Resolution)" << std::endl;
                 return false;
             }
 
@@ -297,12 +280,10 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
             if (rootLimitReached)  return false;
             else                   return InsertToParent(n);
         }
-        //else  std::cout << "object cannot be added" << std::endl;
         return false; // object cannot be added
     }
 
     if (maxDepthReached){
-        //std::cout << "Max. Depth Reached " << std::endl;
         if (node == nullptr) {// If this is the first point in this quad tree, add the object here
             node = n;
             numNodes = 1;
@@ -312,7 +293,6 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
             return false;
     }
 
-    //std::cout << "IsLeaf() == " << IsLeaf() << ", " << leaf << std::endl;
     if (IsLeaf()){
 
         if (boundary.getHalfLength() > OcTree::param.cluster_halfleng){
@@ -321,7 +301,6 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
         else{
             if (node == nullptr)
             {
-               // std::cout << "the first point inserted" << std::endl;
                 node = n;
                 numNodes = 1;
                 if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-6)
@@ -330,9 +309,7 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
             }
 
              // Otherwise, subdivide and then add the point to whichever node will accept it
-            //numNodes = 0;
             if (sqdist(node->getPos(), n->getPos()) < OcTree::param.min_halfleng_sqr){
-                //std::cout << "cannot add (Max. Resolution)" << std::endl;
                 return false;
             }
 
@@ -435,7 +412,6 @@ void OcTree::updateCount()
 bool OcTree::IsNotNew(std::shared_ptr<Node3> n)
 {
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -463,10 +439,8 @@ bool OcTree::IsNotNew(std::shared_ptr<Node3> n)
 }
 
 bool OcTree::Remove(std::shared_ptr<Node3> n){
-    //std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -515,10 +489,8 @@ bool OcTree::Remove(std::shared_ptr<Node3> n){
 }
 
 bool OcTree::Remove(std::shared_ptr<Node3> n,std::unordered_set<OcTree*>& octs){
-    //std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -556,16 +528,14 @@ bool OcTree::Remove(std::shared_ptr<Node3> n,std::unordered_set<OcTree*>& octs){
         bool res8 = southEastBack->IsEmptyLeaf();
         if (res1 & res2 & res3 & res4 & res5 & res6 & res7 & res8)
         {
-            //if (fabs(getHalfLength()-OcTree::param.cluster_halfleng) < 1e-3){
-                octs.erase(northWestFront);
-                octs.erase(northEastFront);
-                octs.erase(southWestFront);
-                octs.erase(southEastFront);
-                octs.erase(northWestBack);
-                octs.erase(northEastBack);
-                octs.erase(southWestBack);
-                octs.erase(southEastBack);
-            //}
+            octs.erase(northWestFront);
+            octs.erase(northEastFront);
+            octs.erase(southWestFront);
+            octs.erase(southEastFront);
+            octs.erase(northWestBack);
+            octs.erase(northEastBack);
+            octs.erase(southWestBack);
+            octs.erase(southEastBack);
             deleteChildren();
             leaf = true;
             numNodes = 0;
@@ -582,10 +552,8 @@ void OcTree::Update(std::shared_ptr<OnGPIS> _gp)
 }
 
 bool OcTree::Update(std::shared_ptr<Node3> n){
-    // std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -616,10 +584,8 @@ bool OcTree::Update(std::shared_ptr<Node3> n){
 }
 
 bool OcTree::Update(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& octs){
-    // std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -684,39 +650,38 @@ bool OcTree::Update(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& octs)
 
 void OcTree::Subdivide()
 {
-    //std::cout << "Subdivide()" << std::endl;
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point3<FLOAT> c = boundary.getCenter();
+    float l = boundary.getHalfLength()*0.5;
+    Point3<float> c = boundary.getCenter();
 
-    Point3<FLOAT> nwf_c = Point3<FLOAT>(c.x-l,c.y+l,c.z+l);
+    Point3<float> nwf_c = Point3<float>(c.x-l,c.y+l,c.z+l);
     AABB3 nwf(nwf_c,l);
     northWestFront = new OcTree(nwf,this);
 
-    Point3<FLOAT> nef_c = Point3<FLOAT>(c.x+l,c.y+l,c.z+l);
+    Point3<float> nef_c = Point3<float>(c.x+l,c.y+l,c.z+l);
     AABB3 nef(nef_c,l);
     northEastFront =  new OcTree(nef,this);
 
-    Point3<FLOAT> swf_c = Point3<FLOAT>(c.x-l,c.y-l,c.z+l);
+    Point3<float> swf_c = Point3<float>(c.x-l,c.y-l,c.z+l);
     AABB3 swf(swf_c,l);
     southWestFront  =  new OcTree(swf,this);
 
-    Point3<FLOAT> sef_c = Point3<FLOAT>(c.x+l,c.y-l,c.z+l);
+    Point3<float> sef_c = Point3<float>(c.x+l,c.y-l,c.z+l);
     AABB3 sef(sef_c,l);
     southEastFront  =  new OcTree(sef,this);
 
-    Point3<FLOAT> nwb_c = Point3<FLOAT>(c.x-l,c.y+l,c.z-l);
+    Point3<float> nwb_c = Point3<float>(c.x-l,c.y+l,c.z-l);
     AABB3 nwb(nwb_c,l);
     northWestBack = new OcTree(nwb,this);
 
-    Point3<FLOAT> neb_c = Point3<FLOAT>(c.x+l,c.y+l,c.z-l);
+    Point3<float> neb_c = Point3<float>(c.x+l,c.y+l,c.z-l);
     AABB3 neb(neb_c,l);
     northEastBack =  new OcTree(neb,this);
 
-    Point3<FLOAT> swb_c = Point3<FLOAT>(c.x-l,c.y-l,c.z-l);
+    Point3<float> swb_c = Point3<float>(c.x-l,c.y-l,c.z-l);
     AABB3 swb(swb_c,l);
     southWestBack  =  new OcTree(swb,this);
 
-    Point3<FLOAT> seb_c = Point3<FLOAT>(c.x+l,c.y-l,c.z-l);
+    Point3<float> seb_c = Point3<float>(c.x+l,c.y-l,c.z-l);
     AABB3 seb(seb_c,l);
     southEastBack  =  new OcTree(seb,this);
 
@@ -727,61 +692,61 @@ void OcTree::Subdivide()
 
 void OcTree::SubdivideExcept(int childType)
 {
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point3<FLOAT> c = boundary.getCenter();
+    float l = boundary.getHalfLength()*0.5;
+    Point3<float> c = boundary.getCenter();
 
     if (childType != CHILD_TYPE_NWF)
     {
-        Point3<FLOAT> nwf_c = Point3<FLOAT>(c.x-l,c.y+l,c.z+l);
+        Point3<float> nwf_c = Point3<float>(c.x-l,c.y+l,c.z+l);
         AABB3 nwf(nwf_c,l);
         northWestFront = new OcTree(nwf,this);
     }
 
     if (childType != CHILD_TYPE_NEF)
     {
-        Point3<FLOAT> nef_c = Point3<FLOAT>(c.x+l,c.y+l,c.z+l);
+        Point3<float> nef_c = Point3<float>(c.x+l,c.y+l,c.z+l);
         AABB3 nef(nef_c,l);
         northEastFront =  new OcTree(nef,this);
     }
 
     if (childType != CHILD_TYPE_SWF)
     {
-         Point3<FLOAT> swf_c = Point3<FLOAT>(c.x-l,c.y-l,c.z+l);
+         Point3<float> swf_c = Point3<float>(c.x-l,c.y-l,c.z+l);
         AABB3 swf(swf_c,l);
         southWestFront  =  new OcTree(swf,this);
     }
 
     if (childType != CHILD_TYPE_SEF)
     {
-        Point3<FLOAT> sef_c = Point3<FLOAT>(c.x+l,c.y-l,c.z+l);
+        Point3<float> sef_c = Point3<float>(c.x+l,c.y-l,c.z+l);
         AABB3 sef(sef_c,l);
         southEastFront  =  new OcTree(sef,this);
     }
 
     if (childType != CHILD_TYPE_NWB)
     {
-        Point3<FLOAT> nwb_c = Point3<FLOAT>(c.x-l,c.y+l,c.z-l);
+        Point3<float> nwb_c = Point3<float>(c.x-l,c.y+l,c.z-l);
         AABB3 nwb(nwb_c,l);
         northWestBack = new OcTree(nwb,this);
     }
 
     if (childType != CHILD_TYPE_NEB)
     {
-        Point3<FLOAT> neb_c = Point3<FLOAT>(c.x+l,c.y+l,c.z-l);
+        Point3<float> neb_c = Point3<float>(c.x+l,c.y+l,c.z-l);
         AABB3 neb(neb_c,l);
         northEastBack =  new OcTree(neb,this);
     }
 
     if (childType != CHILD_TYPE_SWB)
     {
-        Point3<FLOAT> swb_c = Point3<FLOAT>(c.x-l,c.y-l,c.z-l);
+        Point3<float> swb_c = Point3<float>(c.x-l,c.y-l,c.z-l);
         AABB3 swb(swb_c,l);
         southWestBack  =  new OcTree(swb,this);
     }
 
     if (childType != CHILD_TYPE_SEB)
     {
-        Point3<FLOAT> seb_c = Point3<FLOAT>(c.x+l,c.y-l,c.z-l);
+        Point3<float> seb_c = Point3<float>(c.x+l,c.y-l,c.z-l);
         AABB3 seb(seb_c,l);
         southEastBack  =  new OcTree(seb,this);
     }
@@ -789,80 +754,17 @@ void OcTree::SubdivideExcept(int childType)
     leaf = false;
 }
 
-void OcTree::printBoundary()
-{
-    Point3<FLOAT> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
-}
-
-void OcTree::printNodes()
-{
-    Point3<FLOAT> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
-        if (gp != nullptr)
-            std::cout << " (GP)" << std::endl;
-    if (IsLeaf()){
-        std::cout << " This is a leaf node ... " ;
-        if (IsEmpty())
-            std::cout << "  EMPTY"  << std::endl;
-        else{
-            const Point3<FLOAT> cn = node->getPos();
-            std::cout << "   Pos: " << cn.x << "," << cn.y << "," << c.z << "  val:" << node->getVal() << "  sig:" << node->getPosNoise()  << std::endl;
-        }
-    }
-    else{
-        std::cout << std::endl;
-        if (northWestFront != 0){
-            std::cout << " |- NWF ";
-            northWestFront->printNodes();
-        }
-        if (northEastFront != 0){
-            std::cout << " |- NEF ";
-            northEastFront->printNodes();
-        }
-        if (southWestFront != 0){
-            std::cout << " |- SWF ";
-            southWestFront->printNodes();
-        }
-        if (southEastFront != 0){
-            std::cout << " |- SEF ";
-            southEastFront->printNodes();
-        }
-        if (northWestBack != 0){
-            std::cout << " |- NWB ";
-            northWestBack->printNodes();
-        }
-        if (northEastBack != 0){
-            std::cout << " |- NEB ";
-            northEastBack->printNodes();
-        }
-        if (southWestBack != 0){
-            std::cout << " |- SWB ";
-            southWestBack->printNodes();
-        }
-        if (southEastBack != 0){
-            std::cout << " |- SEB ";
-            southEastBack->printNodes();
-        }
-    }
-    return;
-}
-
  // Find all points that appear within a range
 void OcTree::QueryRange(AABB3 range, std::vector<std::shared_ptr<Node3> >& nodes)
 {
-    //std::cout << "QueryRange()" << std::endl;
-
     // Automatically abort if the range does not intersect this quad
     if (!boundary.intersectsAABB(range) || IsEmptyLeaf()){
-       // std::cout << "Not found!" << std::endl;
         return; // empty list
     }
 
     // Check objects at this quad level
     if (IsLeaf()){
         if (sqdist(node->getPos(), range.getCenter()) <  range.getHalfLengthSq()){
-           // std::cout << "Found!" << std::endl;
             nodes.push_back(node);
         }
         return;
@@ -881,7 +783,6 @@ void OcTree::QueryRange(AABB3 range, std::vector<std::shared_ptr<Node3> >& nodes
 
     return ;
  }
-
 
 void OcTree::getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& nodes)
 {
@@ -905,7 +806,6 @@ void OcTree::getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& n
 
      return;
 }
-
 
 void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs)
 {
@@ -933,15 +833,13 @@ void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs)
     }
     else
     {
-        //Point<FLOAT> c = boundary.getCenter();
-        //std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" << std::endl;
         octs.push_back(this);
     }
 
     return ;
 }
 
-void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs, std::vector<FLOAT>& sqdst)
+void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs, std::vector<float>& sqdst)
 {
 
     // Automatically abort if the range does not intersect this quad

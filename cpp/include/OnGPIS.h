@@ -7,21 +7,11 @@
 #include <cstdint>
 #include <Eigen/Dense>
 #include "strct.h"
+#include "params.h"
 
-
-#ifdef __USE_DOUBLE_PRECISION__     // This is in use
-typedef Eigen::MatrixXd EMatrixX;
-typedef Eigen::VectorXd EVectorX;
-typedef Eigen::RowVectorXd ERowVectorX;
-#else                               // For potential transition to float
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
 typedef Eigen::RowVectorXf ERowVectorX;
-#endif
-
-
-#define DEFAULT_MAP_SCALE_PARAM 1 //0.5
-#define DEFAULT_MAP_NOISE_PARAM 1e-2
 
 typedef std::vector<std::shared_ptr<Node> > vecNode;
 typedef std::vector<std::shared_ptr<Node3> > vecNode3;
@@ -30,11 +20,11 @@ class OnGPIS{
       EMatrixX x;
       EMatrixX L;
       EVectorX alpha;
-      std::vector<FLOAT> gradflag;
+      std::vector<float> gradflag;
 
       onGPISparam param;     // defined in strct.h
                              // currently noise param is not effective
-      FLOAT three_over_scale;
+      float three_over_scale;
       bool trained;
       int nSamples;
 
@@ -44,24 +34,22 @@ public:
              trained(false),
              nSamples(0){ }
 
-    OnGPIS(FLOAT s,FLOAT n):param(s,n,n),
+    OnGPIS(float s,float n):param(s,n,n),
                             three_over_scale(3.0/(s*s)),
                             trained(false),
                             nSamples(0){}
 
     void reset();
     bool isTrained(){return trained;}
-    void setGPScaleParam(FLOAT l){param.scale = l;}
+    void setGPScaleParam(float l){param.scale = l;}
 
     void train(const vecNode& samples);
     void train(const vecNode3& samples);
 
     void test(const EMatrixX& xt,EVectorX& val, EMatrixX& gradval, EVectorX& var);
-    void testSinglePoint(const EVectorX& xt, FLOAT& val, FLOAT grad[],FLOAT var[]);
-    void test2Dpoint(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
-    void test2Dpoint(FLOAT x, FLOAT y,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
-
-   // void trainTemp(const vecNode& samples);
-   // void test2DpointTemp(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
+    void testSinglePoint(const EVectorX& xt, float& val, float grad[],float var[]);
+    void test2Dpoint(const EVectorX& xt, float& val, float& gradx, float& grady, float& varval ,float& vargradx, float& vargrady);
+    void test2Dpoint(float x, float y, float& val, float& gradx, float& grady, float& varval ,float& vargradx, float& vargrady);
 };
+
 #endif

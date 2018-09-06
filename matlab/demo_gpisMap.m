@@ -19,7 +19,7 @@ test_intv = 0.1;
 [xg, yg] = meshgrid((xmin+test_intv):test_intv:(xmax-test_intv), (ymin+test_intv):test_intv:(ymax-test_intv));
 xtest = single([xg(:)'; yg(:)']);
 
-skip = 10;
+skip = 100;
 initframe = 101; % first 100 frames are almost static...
 lastframe = (floor((size(poses,1)-initframe)/skip))*skip+initframe;
 for nframe = initframe:skip:lastframe
@@ -30,12 +30,13 @@ for nframe = initframe:skip:lastframe
     Rot = [cos(phi) -sin(phi); sin(phi) cos(phi)];
 
     % update
+    tic
     mexGPisMap('update',single(thetas),...
                         single(ranges(nframe,:)'),...
                         single([tr; reshape(Rot,[],1)]));
-
+    toc
     % test visualization
-    if  1 % nframe == lastframe % set the condition to 1 to visualize every update
+    if  nframe == lastframe % set the condition to 1 to visualize every update
         visualize_gpisMap
     end
 
@@ -47,5 +48,3 @@ end
 
 % delete all resources
 mexGPisMap('reset');
-
-
