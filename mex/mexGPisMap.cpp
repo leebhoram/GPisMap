@@ -68,8 +68,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
 
                 GPisMapParam p;
                 // TO_DO: take struct as inpur and set the params;
-                //FLOAT *px = (FLOAT *)mxGetData(prhs[1]);
-                //GPisMapParam p(px[0], px[1], px[2], (int)px[3],(px+4), px[6], px[7]);
                 gpm = new GPisMap(p);
             }
         }

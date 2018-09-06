@@ -98,16 +98,15 @@ public:
 
     bool intersectsAABB(AABB aabb) {
         return !((aabb.getXMaxbound() < xmin) ||
-            	(aabb.getXMinbound() > xmax) ||
+                (aabb.getXMinbound() > xmax) ||
                 (aabb.getYMaxbound() < ymin) ||
-            	(aabb.getYMinbound() > ymax) );
+                (aabb.getYMinbound() > ymax) );
     }
 };
 
 class QuadTree
 {
     // Arbitrary constant to indicate how many elements can be stored in this quad tree node
-    //const int QT_NODE_CAPACITY = 1;
     const int CHILD_TYPE_NW = 1;
     const int CHILD_TYPE_NE = 2;
     const int CHILD_TYPE_SW = 3;
@@ -121,7 +120,6 @@ class QuadTree
 
     // Points in this quad tree node
     std::shared_ptr<Node> node;
-    //std::shared_ptr<Node> closestChildNode; // representative point (clasest to the center)
     std::shared_ptr<OnGPIS> gp;
 
     bool leaf;

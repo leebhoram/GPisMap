@@ -19,7 +19,6 @@
 #ifndef __STRCT_H_
 #define __STRCT_H_
 
-// strct.h
 #include <vector>
 #include <memory>
 
@@ -28,15 +27,11 @@
 #define DEFAULT_TREE_MAX_HALFLENGTH             102.4   // 0.05*2^10
 #define DEFAULT_TREE_CLUSTER_HALFLENGTH         0.1     // 0.05*2^2
 
-////////////////////////////////////////////////
-// #define __USE_DOUBLE_PRECISION__  // Comment this out if using single precision
-
 #ifdef __USE_DOUBLE_PRECISION__
 typedef double FLOAT;
 #else
 typedef float FLOAT;
 #endif
-////////////////////////////////////////////////
 
 enum NODE_TYPE {NONE=0, HIT=1, FREE, CLUSTER};
 
@@ -175,7 +170,7 @@ typedef struct obsGPparam_{
 
 // GPIS (SDF)
 typedef struct onGPISparam_{
-    // Npte:
+    // Note:
     // OnlineGPIS is implemented to use the Matern class covariance function with (nu=2/3),
     // which has a form of k(r)=(1+sqrt(3)*r/l)exp(-sqrt(3)*r/l) (See covFnc.h)
     FLOAT scale;            // the scale parameter l

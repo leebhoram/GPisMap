@@ -58,7 +58,6 @@ void Node::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){
     grad_sig = _grad_sig;
 }
 
-//// Node3
 Node3::Node3(Point3<FLOAT> _pos, FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _grad, FLOAT _grad_sig, NODE_TYPE n)
 {
     pos = _pos;

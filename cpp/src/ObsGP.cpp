@@ -49,11 +49,9 @@ void GPou::train(const EMatrixX& xt,const EVectorX& f)
 void GPou::test(const EMatrixX& xt,EVectorX& f, EVectorX& var) // Is is different?
 {
 
-    //std::cout << "x = " << x << std::endl;
     EMatrixX K = ornstein_uhlenbeck(x, xt, scale);
     f = K.transpose()*alpha;
 
-    //val = res.head(xt.cols());
     L.template triangularView<Lower>().solveInPlace(K);
 
     K = K.array().pow(2);
@@ -93,8 +91,6 @@ void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
         nSamples = N[0];
         nGroup = nSamples/(param.group_size) + 1;
 
-        //std::cout << "nSamples : " << nSamples << std::endl;
-
         range.push_back(xt[0]);
         for (int n=0;n<(nGroup-1);n++){
             // Make sure there are enough overlap
@@ -109,7 +105,6 @@ void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
                 Map<ERowVectorX> x_(xt+i1,param.group_size + param.overlap);
                 Map<EVectorX> f_(f+i1,param.group_size + param.overlap);
                 // train each gp group
-                // std::shared_ptr<GPou> g(new GPou(param.scale,param.noise));
                 std::shared_ptr<GPou> g(new GPou());
                 g->train(x_,f_);
 
@@ -124,7 +119,6 @@ void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
 
                 Map<ERowVectorX> x_(xt+i1,i2-i1+1);
                 Map<EVectorX> f_(f+i1,i2-i1+1);
-                // std::shared_ptr<GPou> g(new GPou(param.scale,param.noise));
                 std::shared_ptr<GPou> g(new GPou());
                 g->train(x_,f_);
                 gps.push_back(std::move(g));
@@ -137,7 +131,6 @@ void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
                 new (&x_) Map<ERowVectorX>(xt+i1,i2-i1+1);
                 new (&f_) Map<EVectorX>(f+i1,i2-i1+1);
 
-                // std::shared_ptr<GPou> glast(new GPou(param.scale,param.noise));
                 std::shared_ptr<GPou> glast(new GPou());
                 glast->train(x_,f_);
                 gps.push_back(std::move(glast));
@@ -159,8 +152,6 @@ void ObsGP1D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
     int dim = xt.rows();
     int N = xt.cols();
 
-    //std::cout << dim << "x" << N << std::endl;
-
     if (dim ==1){
         FLOAT liml = (*(range.begin())+param.margin);
         FLOAT limr = (*(range.end()-1)-param.margin);
@@ -171,10 +162,10 @@ void ObsGP1D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
             var(k) = 1e6;
             // find the corresponding group
             if (xt(0,k) < liml){ // boundary 1
-                ; //std::cout << " boundary 1" << std::endl;
+                ;
             }
             else if (xt(0,k) > limr){ // boundary 2
-                ; // std::cout << " boundary 2 (" << liml << " to " << limr << ")" << std::endl;
+                ;
             }
             else{ // in-between
                 int j = 0;
@@ -214,15 +205,6 @@ void ObsGP2D::reset(){
     return;
 }
 
-/* void ObsGP2D::setPartition(int ovl, int sz){
- *     bool flag = false;
- *     if (ovl > 0 && param.overlap != ovl) {ObsGP::setOverlap(ovl); flag= true;}
- *     if (sz > 0 && param.group_size != sz) {ObsGP::setGroupSize(sz); flag = true;}
- *     repartition = flag;
- *     return;
- * }
- */
-
 void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
 {
     // number of data grid
@@ -232,9 +214,6 @@ void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
     // number group gp grid
     nGroup[0] = (szSamples[0]-param.overlap)/param.group_size +1;
     nGroup[1] = (szSamples[1]-param.overlap)/param.group_size + 1;
-
-    //std::cout << "param.group_size: " << param.group_size << std::endl;
-    //std::cout << "nGroup: " <<  nGroup[0] << ", " <<  nGroup[1] << std::endl;
 
     Ind_i0.clear();
     Ind_i1.clear();
@@ -261,8 +240,6 @@ void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
         Ind_i0.push_back(i0);
         Ind_i1.push_back(i1);
 
-       // std::cout << "i0=" << i0 <<", i1=" << i1 << std::endl;
-
     }
 
 
@@ -281,8 +258,6 @@ void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
             j1 = szSamples[1]-1;
             Val_j.push_back(val[2*j1*szSamples[0]+1]);
         }
-
-       // std::cout << "j0=" << j0 <<", j1=" << j1 << std::endl;
 
         Ind_j0.push_back(j0);
         Ind_j1.push_back(j1);
@@ -340,18 +315,15 @@ void ObsGP2D::trainValidPoints(FLOAT xt[], FLOAT f[])
             }
 
             // If not empty
-            //std::cout << "(" << m << "," << n << ") # valid points: " << f_valid.size() << std::endl;
             if (x_valid.size() > 1){
                 // matrix/vector map from vector
                 Map<EMatrixX> x_(x_valid.data(),2,f_valid.size());
                 Map<EVectorX> f_(f_valid.data(),f_valid.size());
 
                 // train each gp group
-                // std::shared_ptr<GPou> g(new GPou(param.scale,param.noise));
                 std::shared_ptr<GPou> g(new GPou());
                 g->train(x_,f_);
 
-                //std::cout << "training... gps[" << m*nGroup[0]+n <<  "] size " <<  g->getNumSamples() << std::endl;
                 gps[m*nGroup[0]+n] = std::move(g);
             }
         }
@@ -391,8 +363,6 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
 
     int N = xt.cols();
 
-    //std::cout << "# test points: " << N <<  std::endl;
-
     for (int k=0;k<N;k++){
 
         EVectorX f = val.segment(k,1);
@@ -401,19 +371,15 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
         // find the corresponding group
         if (xt(0,k) < *(Val_i.begin())+param.margin ){ // boundary 1
             ;
-            //std::cout << xt(0,k) << " is beyond boundary i0 " << std::endl;
         }
         else if (xt(0,k) > *(Val_i.end()-1)-param.margin){ // boundary 2
             ;
-            //std::cout << xt(0,k) << " is beyond boundary i1 " << std::endl;
         }
         else if (xt(1,k) < *(Val_j.begin())+param.margin ){ // boundary 1
             ;
-            //std::cout << xt(1,k) << " is beyond boundary j0 " << std::endl;
         }
         else if (xt(1,k) > *(Val_j.end()-1)-param.margin){ // boundary 2
             ;
-            //std::cout << xt(1,k) << " is beyond boundary j1 " << std::endl;
         }
         else{ // in-between
             int n = 0;
@@ -430,14 +396,11 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
                 }
             }
 
-            //std::cout << "(m, n):" << m << ", " << n << std::endl;
             if (1){
                 int gp_ind = m*nGroup[0]+n;
-                //std::cout << "gp_ind = " << gp_ind << " (gps[gp_ind] != nullptr): "  << (gps[gp_ind] != nullptr) <<  std::endl;
                 if (gp_ind < gps.size() && gps[gp_ind] != nullptr){
                     if (gps[gp_ind]->isTrained()){
                         // and test
-                        //std::cout << xt.block(0,k,2,1) << std::endl;
                         gps[gp_ind]->test(xt.block(0,k,2,1), f,v);
                         val(k) = f(0);
                         var(k) = v(0);
@@ -465,17 +428,17 @@ void ObsGP2D::test_kernel(int thread_idx,
         var(k) = 1e6;
         // find the corresponding group
         if (xt(0,k) < *(Val_i.begin())+param.margin ){ // boundary 1
-            ;//std::cout << xt(0,k) << " is beyond boundary i0 " << std::endl;
+            ;
 
         }
         else if (xt(0,k) > *(Val_i.end()-1)-param.margin){ // boundary 2
-            ;//std::cout << xt(0,k) << " is beyond boundary i1 " << std::endl;
+            ;
         }
         else if (xt(1,k) < *(Val_j.begin())+param.margin ){ // boundary 1
-            ;//std::cout << xt(1,k) << " is beyond boundary j0 " << std::endl;
+            ;
         }
         else if (xt(1,k) > *(Val_j.end()-1)-param.margin){ // boundary 2
-            ;//std::cout << xt(1,k) << " is beyond boundary j1 " << std::endl;
+            ;
         }
         else{ // in-between
 
@@ -493,14 +456,11 @@ void ObsGP2D::test_kernel(int thread_idx,
                 }
             }
 
-            //std::cout << "(m, n):" << m << ", " << n << std::endl;
             if (1){
                 int gp_ind = m*nGroup[0]+n;
-                //std::cout << "gp_ind = " << gp_ind << " (gps[gp_ind] != nullptr): "  << (gps[gp_ind] != nullptr) <<  std::endl;
                 if (gp_ind < gps.size() && gps[gp_ind] != nullptr){
                     if (gps[gp_ind]->isTrained()){
                         // and test
-                        //std::cout << xt.block(0,k,2,1) << std::endl;
                         gps[gp_ind]->test(xt.block(0,k,2,1), f,v);
                         val(k) = f(0);
                         var(k) = v(0);

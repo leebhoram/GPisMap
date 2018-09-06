@@ -42,10 +42,6 @@ QuadTree::QuadTree(Point<FLOAT> c):
         gp(nullptr)
 {
      boundary = AABB(c,QuadTree::param.initroot_halfleng);
-//     if (boundary.getHalfLength() < QuadTree::param.min_halfleng)
-//         maxDepthReached = true;
-//     if (boundary.getHalfLength() > QuadTree::param.max_halfleng)
-//         rootLimitReached = true;
 }
 
 
@@ -131,8 +127,6 @@ bool QuadTree::InsertToParent(std::shared_ptr<Node> n){
     // Find out what type the current node is
     const Point<FLOAT> np = n->getPos();
 
-     //std::cout << "inserting: " << np.x << ", " << np.y << std::endl;
-
     Point<FLOAT> par_c;
     int childType = 0;
     if (np.x < c.x && np.y > c.y){
@@ -169,12 +163,10 @@ bool QuadTree::Insert(std::shared_ptr<Node> n){
             if (rootLimitReached)  return false;
             else                   return InsertToParent(n);
         }
-        //else  std::cout << "object cannot be added" << std::endl;
         return false; // object cannot be added
     }
 
     if (maxDepthReached){
-        //std::cout << "Max. Depth Reached " << std::endl;
         if ( node == nullptr) {// If this is the first point in this quad tree, add the object here
             node = n;
             numNodes = 1;
@@ -184,18 +176,15 @@ bool QuadTree::Insert(std::shared_ptr<Node> n){
             return false;
     }
 
-    //std::cout << "IsLeaf() == " << IsLeaf() << ", " << leaf << std::endl;
     if (IsLeaf()){
 
         if (boundary.getHalfLength() > QuadTree::param.cluster_halfleng){
             Subdivide();
         }
         else{
-            //std::cout << "Is node empty?: " << (node == nullptr) << std::endl;
             if (node == nullptr)
             // If this is the first point in this quad tree, add the object here
             {
-               // std::cout << "the first point inserted" << std::endl;
                 node = n;
                 numNodes = 1;
                 return true;
@@ -204,7 +193,6 @@ bool QuadTree::Insert(std::shared_ptr<Node> n){
             // Otherwise, subdivide and then add the point to whichever node will accept it
             //numNodes = 0;
             if (sqdist(node->getPos(), n->getPos()) < QuadTree::param.min_halfleng_sqr){
-                //std::cout << "cannot add (Max. Resolution)" << std::endl;
                 return false;
             }
 
@@ -241,12 +229,10 @@ bool QuadTree::Insert(std::shared_ptr<Node> n,  std::unordered_set<QuadTree*>& q
             if (rootLimitReached)  return false;
             else                   return InsertToParent(n);
         }
-        //else  std::cout << "object cannot be added" << std::endl;
         return false; // object cannot be added
     }
 
     if (maxDepthReached){
-        //std::cout << "Max. Depth Reached " << std::endl;
         if ( node == nullptr) {// If this is the first point in this quad tree, add the object here
             node = n;
             numNodes = 1;
@@ -258,18 +244,15 @@ bool QuadTree::Insert(std::shared_ptr<Node> n,  std::unordered_set<QuadTree*>& q
             return false;
     }
 
-    //std::cout << "IsLeaf() == " << IsLeaf() << ", " << leaf << std::endl;
     if (IsLeaf()){
 
         if (boundary.getHalfLength() > QuadTree::param.cluster_halfleng){
             Subdivide();
         }
         else{
-            //std::cout << "Is node empty?: " << (node == nullptr) << std::endl;
             if (node == nullptr)
             // If this is the first point in this quad tree, add the object here
             {
-               // std::cout << "the first point inserted" << std::endl;
                 node = n;
                 numNodes = 1;
                 if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3)
@@ -278,9 +261,7 @@ bool QuadTree::Insert(std::shared_ptr<Node> n,  std::unordered_set<QuadTree*>& q
             }
 
             // Otherwise, subdivide and then add the point to whichever node will accept it
-            //numNodes = 0;
             if (sqdist(node->getPos(), n->getPos()) < QuadTree::param.min_halfleng_sqr){
-                //std::cout << "cannot add (Max. Resolution)" << std::endl;
                 return false;
             }
 
@@ -345,7 +326,6 @@ void QuadTree::updateCount()
 bool QuadTree::IsNotNew(std::shared_ptr<Node> n)
 {
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -369,10 +349,8 @@ bool QuadTree::IsNotNew(std::shared_ptr<Node> n)
 }
 
 bool QuadTree::Remove(std::shared_ptr<Node> n){
-    //std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -413,10 +391,8 @@ bool QuadTree::Remove(std::shared_ptr<Node> n){
 }
 
 bool QuadTree::Remove(std::shared_ptr<Node> n,std::unordered_set<QuadTree*>& quads){
-    //std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -446,13 +422,10 @@ bool QuadTree::Remove(std::shared_ptr<Node> n,std::unordered_set<QuadTree*>& qua
         res2 &= southEast->IsEmptyLeaf();
         if (res2)
         {
-            // want to check only for C-level
-           // if (fabs(getHalfLength()-QuadTree::param.cluster_halfleng) < 1e-3){
-                quads.erase(northWest);
-                quads.erase(northEast);
-                quads.erase(southWest);
-                quads.erase(southEast);
-          //  }
+            quads.erase(northWest);
+            quads.erase(northEast);
+            quads.erase(southWest);
+            quads.erase(southEast);
             deleteChildren();
             leaf = true;
             numNodes = 0;
@@ -469,10 +442,8 @@ void QuadTree::Update(std::shared_ptr<OnGPIS> _gp)
 }
 
 bool QuadTree::Update(std::shared_ptr<Node> n){
-    // std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -496,10 +467,8 @@ bool QuadTree::Update(std::shared_ptr<Node> n){
 }
 
 bool QuadTree::Update(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& quads){
-    // std::cout << "Remove()" << std::endl;
     // Ignore objects that do not belong in this quad tree
     if (!boundary.containsPoint(n->getPos())){
-        //std::cout << "object cannot be removed (out of range)" << std::endl;
         return false; // object cannot be added
     }
 
@@ -542,7 +511,6 @@ bool QuadTree::Update(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& qu
 
 void QuadTree::Subdivide()
 {
-    //std::cout << "Subdivide()" << std::endl;
     FLOAT l = boundary.getHalfLength()*0.5;
     Point<FLOAT> c = boundary.getCenter();
     Point<FLOAT> nw_c = Point<FLOAT>(c.x-l,c.y+l);
@@ -649,8 +617,6 @@ void QuadTree::printNodes()
  // Find all points that appear within a range
 void QuadTree::QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes)
 {
-    //std::cout << "QueryRange()" << std::endl;
-
     // Automatically abort if the range does not intersect this quad
     if (!boundary.intersectsAABB(range) || IsEmptyLeaf()){
        // std::cout << "Not found!" << std::endl;
@@ -716,8 +682,6 @@ void QuadTree::QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads)
     }
     else
     {
-        //Point<FLOAT> c = boundary.getCenter();
-        //std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" << std::endl;
         quads.push_back(this);
     }
 

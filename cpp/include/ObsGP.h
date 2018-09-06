@@ -85,12 +85,6 @@ public:
 class ObsGP{
 protected:
 
-  /* :REMARKS:Tue May 29 15:02:07 EDT 2018:huangzonghao:
-   *  Moving the param def to the derived class, since we want the params to be
-   *  determined at compile time and they each has different params
-   */
-    // obsGPparam param;   // defined in strct.h
-
     bool trained;
 
     std::vector<std::shared_ptr<GPou> > gps;          // pointer to the local GPs

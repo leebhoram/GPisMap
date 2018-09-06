@@ -260,7 +260,6 @@ void GPisMap::updateMapPoints(){
 
 
 void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
-    //t1= std::chrono::high_resolution_clock::now();
     // placeholders
     EMatrixX amx(1,1);
     EVectorX rinv0(1);
@@ -484,7 +483,6 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
                 activeSet.insert(*itv);
         }
     }
-    //t2= std::chrono::high_resolution_clock::now();
     return;
 }
 
@@ -606,10 +604,6 @@ void GPisMap::evalPoints(){
         }
     }
 
-   // t->printNodes();
-   //std::cout << t->getNodeCount() << " points are in the map" << std::endl;
-   //std::cout << "Active set size: " << activeSet.size() << std::endl;
-   //t->printBoundary();
     t2= std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
     runtime[2] = time_collapsed.count();
@@ -789,7 +783,7 @@ bool GPisMap::test(  FLOAT * x, int dim, int leng, FLOAT * res){
             std::generate(std::begin(idx), std::end(idx), [&]{ return n++; });
             std::sort(  std::begin(idx), std::end(idx),[&](int i1, int i2) { return sqdst[i1] < sqdst[i2]; } );
 
-//             // get THE FIRST gp pointer
+            // get THE FIRST gp pointer
              std::shared_ptr<OnGPIS> gp = quads[idx[0]]->getGP();
             if (gp != nullptr){
                 gp->test2Dpoint(xt,res[k6],res[k6+1],res[k6+2],res[k6+3],res[k6+4],res[k6+5]);

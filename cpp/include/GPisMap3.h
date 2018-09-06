@@ -45,7 +45,6 @@ typedef struct camParam_{
 typedef struct GPisMap3Param_{
     FLOAT delx;         // numerical step delta (e.g. surface normal sampling)
     FLOAT fbias;        // constant map bias values (mean of GP)
-//    FLOAT sensor_offset[3];
     FLOAT obs_var_thre; // threshold for variance of ObsGP
                         //  - If var(prediction) > v_thre, then don't rely on the prediction.
     int obs_skip;     // use every 'skip'-th pixel
@@ -60,9 +59,6 @@ typedef struct GPisMap3Param_{
         fbias = 0.2;
         obs_skip = 2;
         obs_var_thre = 0.04;
-//         sensor_offset[0] = 0.0;
-//         sensor_offset[1] = 0.0;
-//         sensor_offset[2] = 0.0;
         min_position_noise = 1e-3;
         min_grad_noise = 1e-2;
         map_scale_param = 0.04; // 0.1;
@@ -74,14 +70,10 @@ typedef struct GPisMap3Param_{
         fbias = par.fbias;
         obs_skip = par.obs_skip;
         obs_var_thre = par.obs_var_thre;
-//         sensor_offset[0] = par.sensor_offset[0];
-//         sensor_offset[1] = par.sensor_offset[1];
-//         sensor_offset[2] = par.sensor_offset[2];
         min_position_noise = par.min_position_noise;
         min_grad_noise = par.min_grad_noise;
         map_scale_param = par.map_scale_param;
         map_noise_param = par.map_noise_param;
-        //useCuda = par.useCuda;
     }
 }GPisMap3Param;
 

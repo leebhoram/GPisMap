@@ -47,48 +47,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
     mxGetString(prhs[0],command,128);
     std::string commstr(command);
 
-//     if (commstr.compare("init")==0) {
-//
-//         if (gpm != 0){
-//             delete gpm;
-//             gpm = 0;
-//         }
-//
-//         if (nrhs < 2){
-//             gpm = new GPisMap3();
-//         }
-//         else{
-//             size_t numel = mxGetNumberOfElements(prhs[1]);
-//
-//             if (numel == 8){
-//                 if (sizeof(FLOAT) == sizeof(double)){ // double-precision
-//                     if (mxDOUBLE_CLASS != mxGetClassID(prhs[1]) ){
-//                         std::cout << "The input data must be double type. @ train()" << std::endl;
-//                         return;
-//                     }
-//                 }
-//                 else if (sizeof(FLOAT) == sizeof(float)) { // single-precision
-//                     if (mxSINGLE_CLASS != mxGetClassID(prhs[1]) ){
-//                         std::cout << "The input data must be float (single) type.  @ train()" << std::endl;
-//                         return;
-//                     }
-//                 }
-//                 else {
-//                     std::cout << "The input data must be float (single or double) type. @ train()" << std::endl;
-//                     return;
-//                 }
-//
-//                 GPisMap3Param p;
-//                 camParam c;
-//                 // TO_DO: take struct as inpur and set the params;
-//                 //FLOAT *px = (FLOAT *)mxGetData(prhs[1]);
-//                 //GPisMapParam p(px[0], px[1], px[2], (int)px[3],(px+4), px[6], px[7]);
-//                 gpm = new GPisMap3(p,c);
-//             }
-//         }
-//         return;
-//     }
-//     else
     if (commstr.compare("update")==0) {
 
         if (gpm == 0){
@@ -242,8 +200,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
                 t1 = std::chrono::high_resolution_clock::now();
             }
 
-            //std::cout << "Number of testing point:" <<  N << std::endl;
-
             FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
             gpm->test(px, dim, N, pRes);
 
@@ -302,8 +258,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
                 // test time
                 t1 = std::chrono::high_resolution_clock::now();
             }
-
-            //std::cout << "Number of testing point:" <<  N << std::endl;
 
             FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
             gpm->test_mt(px, dim, N, pRes);
@@ -375,40 +329,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
         }
         return;
     }
-    /*
-    else if (commstr.compare("getAllPoints2")==0){
-        if (gpm != 0){
-            std::vector<FLOAT> pos;
-            std::vector<FLOAT> var;
-            std::vector<FLOAT> grad;
-            std::vector<FLOAT> grad_var;
-            gpm->getAllPoints(pos,var,grad,grad_var);
-
-            int N = pos.size()/2; // 2D
-            if (N > 0){
-                if (sizeof(FLOAT) == sizeof(double)){
-                    plhs[0] = mxCreateDoubleMatrix(2,N,mxREAL);
-                    plhs[1] = mxCreateDoubleMatrix(1,N,mxREAL);
-                    plhs[2] = mxCreateDoubleMatrix(2,N,mxREAL);
-                    plhs[3] = mxCreateDoubleMatrix(1,N,mxREAL);
-                }
-                else if (sizeof(FLOAT) == sizeof(float)){
-                    plhs[0] = mxCreateNumericMatrix(2,N,mxSINGLE_CLASS, mxREAL);
-                    plhs[1] = mxCreateNumericMatrix(1,N,mxSINGLE_CLASS, mxREAL);
-                    plhs[2] = mxCreateNumericMatrix(2,N,mxSINGLE_CLASS, mxREAL);
-                    plhs[3] = mxCreateNumericMatrix(1,N,mxSINGLE_CLASS, mxREAL);
-                }
-                FLOAT *ppos = (FLOAT*)mxGetPr(plhs[0]);
-                FLOAT *pvar = (FLOAT*)mxGetPr(plhs[1]);
-                FLOAT *pgrad = (FLOAT*)mxGetPr(plhs[2]);
-                FLOAT *pgradvar = (FLOAT*)mxGetPr(plhs[3]);
-                memcpy(ppos,pos.data(),sizeof(FLOAT)*2*N);
-                memcpy(pvar,var.data(),sizeof(FLOAT)*N);
-                memcpy(pgrad,grad.data(),sizeof(FLOAT)*2*N);
-                memcpy(pgradvar,grad_var.data(),sizeof(FLOAT)*N);
-            }
-        }
-    }  */
     else if (commstr.compare("getRuntimes")==0) {
         if (gpm != 0){
             plhs[0] = mxCreateDoubleMatrix(1,4,mxREAL);

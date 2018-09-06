@@ -112,7 +112,6 @@ public:
 
     int getMapDimension(){return mapDimension;}
     void getAllPoints(std::vector<FLOAT> & pos);
-    // void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var);
     void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var, std::vector<FLOAT> &grad,  std::vector<FLOAT> &grad_var);
 
     double getRuntime0(){return runtime[0];}

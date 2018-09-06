@@ -16,11 +16,9 @@
  *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
  */
-//////////////////////////////////////////
-// covFnc.cpp
+
 // This file implements covariance functions for Gaussian Processes.
-//
-// by Bhoram Lee
+
 #include "covFnc.h"
 #include <cmath>
 #include <iostream>
@@ -154,7 +152,6 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
 
     int ng = 0;
     for (auto it = gradflag.begin();it!=gradflag.end();it++){
-       // std::cout << (*it) << std::endl;
         if ((*it) > 0.5){
             (*it) = ng;
             ng++;
@@ -166,8 +163,6 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
     }
 
     K = EMatrixX::Zero(n+ng*dim,n+ng*dim);
-
-    //std::cout << K.rows() << "x" << K.cols() << std::endl;
 
     for (int k=0;k<n;k++){
         int kind1=gradflag[k]+n;
@@ -274,7 +269,6 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
 
     int ng = 0;
     for (auto it = gradflag.begin();it!=gradflag.end();it++){
-       // std::cout << (*it) << std::endl;
         if ((*it) > 0.5){
             (*it) = ng;
             ng++;
@@ -332,8 +326,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
     FLOAT sqr3L2 = sqr3L*sqr3L;
     EMatrixX K;
 
-   // std::cout << x1.size() << std::endl;
-
     int ng = 0;
     for (auto it = gradflag.begin();it!=gradflag.end();it++){
        // std::cout << (*it) << std::endl;
@@ -348,8 +340,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
     }
 
     K = EMatrixX::Zero(n+ng*dim,n+ng*dim);
-   // std::cout << "n: " << n << ", ng: " << ng << ", dim:" << dim << std::endl;
-   //std::cout << "K.size() =" << K.size() << std::endl;
 
     for (int k=0;k<n;k++){
         int kind1=gradflag[k]+n;
@@ -372,7 +362,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
             else{
                 FLOAT r = (x1.col(k)-x1.col(j)).norm();
                 K(k,j) = kf(r,sqr3L);
-                //std::cout << "(" << k <<"," << j << ") " << x1(k,j) << std::endl;
                 K(j,k) = K(k,j);
                 if (gradflag[k] > -1){
 
@@ -392,15 +381,10 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
 
                         K(kind1,jind1) = kf2(r,x1(0,k)-x1(0,j),x1(0,k)-x1(0,j),1.0,sqr3L);
                         K(jind1,kind1) = K(kind1,jind1);
-                         K(kind1,jind2) = kf2(r,x1(0,k)-x1(0,j),x1(1,k)-x1(1,j),0.0,sqr3L);
-                         K(jind1,kind2) = K(kind1,jind2);
-                         K(kind2,jind1) = K(kind1,jind2);
-                         K(jind2,kind1) = K(kind1,jind2);
-//                         K(kind1,jind2) = 0.0;
-//                         K(jind1,kind2) = 0.0;
-//                         K(kind2,jind1) = 0.0;
-//                         K(jind2,kind1) = 0.0;
-
+                        K(kind1,jind2) = kf2(r,x1(0,k)-x1(0,j),x1(1,k)-x1(1,j),0.0,sqr3L);
+                        K(jind1,kind2) = K(kind1,jind2);
+                        K(kind2,jind1) = K(kind1,jind2);
+                        K(jind2,kind1) = K(kind1,jind2);
                         K(kind2,jind2) = kf2(r,x1(1,k)-x1(1,j),x1(1,k)-x1(1,j),1.0,sqr3L);
                         K(jind2,kind2) = K(kind2,jind2);
                     }
@@ -433,7 +417,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
 
     int ng = 0;
     for (auto it = gradflag.begin();it!=gradflag.end();it++){
-       // std::cout << (*it) << std::endl;
         if ((*it) > 0.5){
             (*it) = ng;
             ng++;

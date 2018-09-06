@@ -126,18 +126,17 @@ public:
 
     bool intersectsAABB(AABB3 aabb) {
         return !((aabb.getXMaxbound() < xmin) ||
-            	(aabb.getXMinbound() > xmax) ||
+                (aabb.getXMinbound() > xmax) ||
                 (aabb.getYMaxbound() < ymin) ||
-            	(aabb.getYMinbound() > ymax) ||
+                (aabb.getYMinbound() > ymax) ||
                 (aabb.getZMaxbound() < zmin) ||
-            	(aabb.getZMinbound() > zmax) );
+                (aabb.getZMinbound() > zmax) );
     }
 };
 
 class OcTree
 {
     // Arbitrary constant to indicate how many elements can be stored in this quad tree node
-    //const int QT_NODE_CAPACITY = 1;
     const int CHILD_TYPE_NWF = 1;
     const int CHILD_TYPE_NEF = 2;
     const int CHILD_TYPE_SWF = 3;
@@ -161,7 +160,6 @@ class OcTree
     bool leaf;
     bool maxDepthReached;
     bool rootLimitReached;
-    //bool levelc;
 
     int32_t numNodes;
 

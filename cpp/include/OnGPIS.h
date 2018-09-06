@@ -78,8 +78,5 @@ public:
     void testSinglePoint(const EVectorX& xt, FLOAT& val, FLOAT grad[],FLOAT var[]);
     void test2Dpoint(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
     void test2Dpoint(FLOAT x, FLOAT y,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
-
-   // void trainTemp(const vecNode& samples);
-   // void test2DpointTemp(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady);
 };
 #endif
