@@ -15,11 +15,8 @@
  * http://www.gnu.org/licenses/gpl-3.0.html.
  *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
+ *          Huang Zonghao<ac@hzh.io>
  */
-////////////////////////////////////////////////////
-// Observation GP Module
-//
-// Bhoram Lee (bhoram.lee@gmail.com)
 
 #ifndef __ObsGP_H__
 #define __ObsGP_H__

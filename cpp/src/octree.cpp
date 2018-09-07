@@ -16,6 +16,7 @@
  *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
  */
+
 #include "octree.h"
 
 #define EPS 1e-12

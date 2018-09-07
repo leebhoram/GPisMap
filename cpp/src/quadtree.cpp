@@ -16,6 +16,7 @@
  *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
  */
+
 #include "quadtree.h"
 
 #define EPS 1e-12

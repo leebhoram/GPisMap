@@ -15,7 +15,9 @@
  * http://www.gnu.org/licenses/gpl-3.0.html.
  *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
+ *          Huang Zonghao<ac@hzh.io>
  */
+
 #include "OnGPIS.h"
 #include "covFnc.h"
 #include <Eigen/Cholesky>

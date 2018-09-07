@@ -14,13 +14,12 @@
  * along with this program; if not, you can access it online at
  * http://www.gnu.org/licenses/gpl-3.0.html.
  *
+ * covFnc.h
+ * This header includes definitions of covariance functions for Gaussian Processes.
+ *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
  */
-//////////////////////////////////////////
-// covFnc.h
-// This header includes definitions of covariance functions for Gaussian Processes.
-//
-// by Bhoram Lee
+
 #ifndef __COVFNC_H__
 #define __COVFNC_H__
 

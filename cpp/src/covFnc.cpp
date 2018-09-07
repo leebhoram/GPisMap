@@ -14,10 +14,11 @@
  * along with this program; if not, you can access it online at
  * http://www.gnu.org/licenses/gpl-3.0.html.
  *
+ * covFnc.cpp
+ * This file implements covariance functions for Gaussian Processes.
+ *
  * Authors: Bhoram Lee <bhoram.lee@gmail.com>
  */
-
-// This file implements covariance functions for Gaussian Processes.
 
 #include "covFnc.h"
 #include <cmath>
