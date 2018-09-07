@@ -18,9 +18,10 @@ va = reshape(res(4,:),size(xg));
 % res(4,:) : var
 
 figure(1), hold off;
-set(gcf,'visible','off','Color','w','Position',gcf_position);
+% set(gcf,'visible','off');
 gcf_position = get(gcf,'Position');
 gcf_position(3:4) = [(xmax-xmin)*20+10 (ymax-ymin)*20+10];
+set(gcf,'Color','w','Position',gcf_position);
 ax1 = gca;  hold off;
 
 % sdf
