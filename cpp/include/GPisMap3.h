@@ -24,6 +24,7 @@
 #include "ObsGP.h"
 #include "OnGPIS.h"
 #include "octree.h"
+#include "params.h"
 
 typedef struct camParam_{
     float fx;
@@ -49,7 +50,7 @@ typedef struct GPisMap3Param_{
     float fbias;        // constant map bias values (mean of GP)
     float obs_var_thre; // threshold for variance of ObsGP
                         //  - If var(prediction) > v_thre, then don't rely on the prediction.
-    int obs_skip;     // use every 'skip'-th pixel
+    int   obs_skip;     // use every 'skip'-th pixel
     float min_position_noise;
     float min_grad_noise;
 
@@ -57,14 +58,14 @@ typedef struct GPisMap3Param_{
     float map_noise_param;
 
     GPisMap3Param_(){
-        delx = 1e-3;
-        fbias = 0.2;
-        obs_skip = 2;
-        obs_var_thre = 0.04;
-        min_position_noise = 1e-3;
-        min_grad_noise = 1e-2;
-        map_scale_param = 0.04; // 0.1;
-        map_noise_param = 5e-3;
+        delx = GPISMAP3_DELX;
+        fbias = GPISMAP3_FBIAS;
+        obs_skip = GPISMAP3_OBS_SKIP;
+        obs_var_thre = GPISMAP3_OBS_VAR_THRE;
+        min_position_noise = GPISMAP3_MIN_POS_NOISE;
+        min_grad_noise = GPISMAP3_MIN_GRAD_NOISE;
+        map_scale_param = GPISMAP3_MAP_SCALE;
+        map_noise_param = GPISMAP3_MAP_NOISE;
     }
 
     GPisMap3Param_(GPisMap3Param_& par){

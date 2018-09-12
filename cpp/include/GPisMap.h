@@ -25,6 +25,7 @@
 #include "OnGPIS.h"
 #include "quadtree.h"
 #include <chrono>
+#include "params.h"
 
 typedef struct GPisMapParam_{
     float delx;         // numerical step delta (e.g. surface normal sampling)
@@ -39,21 +40,18 @@ typedef struct GPisMapParam_{
     float map_scale_param;
     float map_noise_param;
 
-    int useCuda;
-
     GPisMapParam_(){
-        delx = 1e-2;
-        fbias = 0.2;
-        obs_var_thre = 0.1;
-        sensor_offset[0] = 0.08;
-        sensor_offset[1] = 0.0;
-        angle_obs_limit[0] = -135.0*M_PI/180.0;
-        angle_obs_limit[1] = 135.0*M_PI/180.0;
-        min_position_noise = 1e-2;
-        min_grad_noise = 1e-2;
-        map_scale_param = 1.2;
-        map_noise_param = 1e-2;
-        useCuda = 0;
+        delx = GPISMAP_DELX;
+        fbias = GPISMAP_FBIAS;
+        obs_var_thre = GPISMAP_OBS_VAR_THRE;
+        sensor_offset[0] = GPISMAP_SENSOR_OFFSET_0;
+        sensor_offset[1] = GPISMAP_SENSOR_OFFSET_1;
+        angle_obs_limit[0] = GPISMAP_ANGLE_OBS_LIMIT_0;
+        angle_obs_limit[1] = GPISMAP_ANGLE_OBS_LIMIT_1;
+        min_position_noise = GPISMAP_MIN_POS_NOISE;
+        min_grad_noise = GPISMAP_MIN_GRAD_NOISE;
+        map_scale_param = GPISMAP_MAP_SCALE;
+        map_noise_param = GPISMAP_MAP_NOISE;
     }
 
     GPisMapParam_( GPisMapParam_& par){
@@ -66,7 +64,6 @@ typedef struct GPisMapParam_{
         min_grad_noise = par.min_grad_noise;
         map_scale_param = par.map_scale_param;
         map_noise_param = par.map_noise_param;
-        useCuda = par.useCuda;
     }
 }GPisMapParam;
 

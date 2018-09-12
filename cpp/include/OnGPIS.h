@@ -27,15 +27,12 @@
 #include <cstdint>
 #include <Eigen/Dense>
 #include "strct.h"
+#include "params.h"
 
 
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
 typedef Eigen::RowVectorXf ERowVectorX;
-
-
-#define DEFAULT_MAP_SCALE_PARAM 1 //0.5
-#define DEFAULT_MAP_NOISE_PARAM 1e-2
 
 typedef std::vector<std::shared_ptr<Node> > vecNode;
 typedef std::vector<std::shared_ptr<Node3> > vecNode3;

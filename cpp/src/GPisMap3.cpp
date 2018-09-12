@@ -21,22 +21,21 @@
 #include "GPisMap3.h"
 #include <chrono>
 #include <thread>
-//
-static float Rtimes = (float)2.0;
-static float C_leng = (float)0.025;
-tree_param OcTree::param = tree_param((float)(0.0125/2.0),(float)1.6,(float)0.4, C_leng);
-// Note: 1.6 = 0.0125*(2.0^7)
-//       0.4 = 0.0125*(2.0^5)
+#include "params.h"
+
+static float Rtimes = (float)GPISMAP3_RTIMES;
+static float C_leng = (float)GPISMAP3_TREE_CLUSTER_HALF_LENGTH;
+tree_param OcTree::param = tree_param((float) GPISMAP3_TREE_MIN_HALF_LENGTH,
+                                      (float) GPISMAP3_TREE_MAX_HALF_LENGTH,
+                                      (float) GPISMAP3_TREE_INIT_ROOT_HALF_LENGTH,
+                                      C_leng);
 
 static std::chrono::high_resolution_clock::time_point t1;
 static std::chrono::high_resolution_clock::time_point t2;
 
-#define MAX_RANGE   4e0
-#define MIN_RANGE   4e-1
-
 static inline bool isRangeValid(float r)
 {
-    return (r < MAX_RANGE) &&  (r > MIN_RANGE);
+    return (r < GPISMAP3_MAX_RANGE) &&  (r > GPISMAP3_MIN_RANGE);
 }
 
 static inline float occ_test(float rinv, float rinv0, float a)

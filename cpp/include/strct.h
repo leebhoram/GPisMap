@@ -23,11 +23,7 @@
 
 #include <vector>
 #include <memory>
-
-#define DEFAULT_TREE_INIT_ROOT_HALFLENGTH       12.8    // 0.05*2^7
-#define DEFAULT_TREE_MIN_HALFLENGTH             0.05     // 0.05*2^0
-#define DEFAULT_TREE_MAX_HALFLENGTH             102.4   // 0.05*2^10
-#define DEFAULT_TREE_CLUSTER_HALFLENGTH         0.1     // 0.05*2^2
+#include "params.h"
 
 enum NODE_TYPE {NONE=0, HIT=1, FREE, CLUSTER};
 

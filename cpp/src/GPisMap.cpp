@@ -21,8 +21,12 @@
 #include "GPisMap.h"
 #include <algorithm>
 #include <thread>
+#include "params.h"
 
-tree_param QuadTree::param = tree_param(0.2,102.4,12.8, 0.8); // the parameters must be (some common base)^n (n: integer)
+tree_param QuadTree::param = tree_param(GPISMAP_TREE_MIN_HALF_LENGTH,
+                                        GPISMAP_TREE_MAX_HALF_LENGTH,
+                                        GPISMAP_TREE_INIT_ROOT_HALF_LENGTH,
+                                        GPISMAP_TREE_CLUSTER_HALF_LENGTH);
 
 static std::chrono::high_resolution_clock::time_point t1;
 static std::chrono::high_resolution_clock::time_point t2;

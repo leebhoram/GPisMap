@@ -27,20 +27,7 @@
 #include <cstdint>
 #include <Eigen/Dense>
 #include "strct.h"
-
-
-#define DEFAULT_SCALE_PARAM 0.5
-#define DEFAULT_NOISE_PARAM 0.01
-
-// 1D
-#define DEFAULT_OVERLAP_SZ  6
-#define DEFAULT_GROUP_SZ    20
-#define DEFAULT_MARGIN      0.0175
-
-// 2D
-#define DEFAULT_MARGIN2      0.005
-#define DEFAULT_OVERLAP_SZ2  3
-#define DEFAULT_GROUP_SZ2    5
+#include "params.h"
 
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
@@ -54,8 +41,8 @@ class GPou{
     EVectorX alpha;
 
     int dim; // need this?
-    const float scale = DEFAULT_SCALE_PARAM;
-    const float noise = DEFAULT_NOISE_PARAM;
+    const float scale = DEFAULT_OBSGP_SCALE_PARAM;
+    const float noise = DEFAULT_OBSGP_NOISE_PARAM;
     bool trained = false;
 
 public:
@@ -97,11 +84,11 @@ class ObsGP1D : public ObsGP{
 
     std::vector<float> range;   // partitioned range for test
 
-    const obsGPparam param = {DEFAULT_SCALE_PARAM,
-                              DEFAULT_NOISE_PARAM,
-                              DEFAULT_MARGIN,
-                              DEFAULT_OVERLAP_SZ,
-                              DEFAULT_GROUP_SZ};
+    const obsGPparam param = {DEFAULT_OBSGP_SCALE_PARAM,
+                              DEFAULT_OBSGP_NOISE_PARAM,
+                              DEFAULT_OBSGP_MARGIN,
+                              DEFAULT_OBSGP_OVERLAP_SZ,
+                              DEFAULT_OBSGP_GROUP_SZ};
 
 public:
     ObsGP1D():nSamples(0){}
@@ -134,11 +121,11 @@ class ObsGP2D : public ObsGP{
     void computePartition(float val[], int ni, int nj);
     void trainValidPoints(float xt[], float f[]);
 
-    const obsGPparam param = {DEFAULT_SCALE_PARAM,
-                              DEFAULT_NOISE_PARAM,
-                              DEFAULT_MARGIN2,
-                              DEFAULT_OVERLAP_SZ2,
-                              DEFAULT_GROUP_SZ2};
+    const obsGPparam param = {DEFAULT_OBSGP_SCALE_PARAM,
+                              DEFAULT_OBSGP_NOISE_PARAM,
+                              DEFAULT_OBSGP_MARGIN2,
+                              DEFAULT_OBSGP_OVERLAP_SZ2,
+                              DEFAULT_OBSGP_GROUP_SZ2};
 public:
 
     void reset();
