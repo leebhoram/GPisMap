@@ -22,7 +22,7 @@
 #include <memory>
 #include "strct.h"
 
-Node::Node(Point<FLOAT> _pos, FLOAT _val, FLOAT _pose_sig, Point<FLOAT> _grad, FLOAT _grad_sig, NODE_TYPE n)
+Node::Node(Point<float> _pos, float _val, float _pose_sig, Point<float> _grad, float _grad_sig, NODE_TYPE n)
 {
     pos = _pos;
     val = _val;
@@ -32,8 +32,8 @@ Node::Node(Point<FLOAT> _pos, FLOAT _val, FLOAT _pose_sig, Point<FLOAT> _grad, F
     nt = n;
 }
 
-Node::Node(Point<FLOAT> _pos, NODE_TYPE _nt): val(0.0),
-                                              grad(Point<FLOAT>()),
+Node::Node(Point<float> _pos, NODE_TYPE _nt): val(0.0),
+                                              grad(Point<float>()),
                                               pose_sig(0.0),
                                               grad_sig(0.0)
 {
@@ -46,7 +46,7 @@ Node::Node():val(0.0), pose_sig(0.0), grad_sig(0.0)
     nt = NODE_TYPE::NONE;
 }
 
-void Node::updateData(FLOAT _val, FLOAT _pose_sig, Point<FLOAT> _grad, FLOAT _grad_sig, NODE_TYPE n){
+void Node::updateData(float _val, float _pose_sig, Point<float> _grad, float _grad_sig, NODE_TYPE n){
     val = _val;
     grad = _grad;
     pose_sig = _pose_sig;
@@ -55,12 +55,12 @@ void Node::updateData(FLOAT _val, FLOAT _pose_sig, Point<FLOAT> _grad, FLOAT _gr
 }
 
 
-void Node::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){
+void Node::updateNoise( float _pose_sig, float _grad_sig){
     pose_sig = _pose_sig;
     grad_sig = _grad_sig;
 }
 
-Node3::Node3(Point3<FLOAT> _pos, FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _grad, FLOAT _grad_sig, NODE_TYPE n)
+Node3::Node3(Point3<float> _pos, float _val, float _pose_sig, Point3<float> _grad, float _grad_sig, NODE_TYPE n)
 {
     pos = _pos;
     val = _val;
@@ -70,8 +70,8 @@ Node3::Node3(Point3<FLOAT> _pos, FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _gra
     nt = n;
 }
 
-Node3::Node3(Point3<FLOAT> _pos, NODE_TYPE _nt): val(0.0),
-                                                                grad(Point3<FLOAT>()),
+Node3::Node3(Point3<float> _pos, NODE_TYPE _nt): val(0.0),
+                                                                grad(Point3<float>()),
                                                                 pose_sig(0.0),
                                                                 grad_sig(0.0)
 {
@@ -84,7 +84,7 @@ Node3::Node3():val(0.0), pose_sig(0.0), grad_sig(0.0)
     nt = NODE_TYPE::NONE;
 }
 
-void Node3::updateData(FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _grad, FLOAT _grad_sig, NODE_TYPE n){
+void Node3::updateData(float _val, float _pose_sig, Point3<float> _grad, float _grad_sig, NODE_TYPE n){
     val = _val;
     grad = _grad;
     pose_sig = _pose_sig;
@@ -92,7 +92,7 @@ void Node3::updateData(FLOAT _val, FLOAT _pose_sig, Point3<FLOAT> _grad, FLOAT _
     nt = n;
 }
 
-void Node3::updateNoise( FLOAT _pose_sig, FLOAT _grad_sig){
+void Node3::updateNoise( float _pose_sig, float _grad_sig){
     pose_sig = _pose_sig;
     grad_sig = _grad_sig;
 }

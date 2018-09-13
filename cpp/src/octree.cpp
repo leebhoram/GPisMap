@@ -21,16 +21,16 @@
 
 #define EPS 1e-12
 
-static FLOAT sqdist(const Point3<FLOAT>& pt1, const Point3<FLOAT>& pt2)
+static float sqdist(const Point3<float>& pt1, const Point3<float>& pt2)
 {
-    FLOAT dx = (pt1.x - pt2.x);
-    FLOAT dy = (pt1.y - pt2.y);
-    FLOAT dz = (pt1.z - pt2.z);
+    float dx = (pt1.x - pt2.x);
+    float dy = (pt1.y - pt2.y);
+    float dz = (pt1.z - pt2.z);
 
     return dx*dx + dy*dy + dz*dz;
 }
 
-OcTree::OcTree(Point3<FLOAT> c)
+OcTree::OcTree(Point3<float> c)
         :northWestFront(0),
          northEastFront(0),
          southWestFront(0),
@@ -123,7 +123,7 @@ OcTree::OcTree(AABB3 _boundary,  OcTree* const ch,  int child_type)
             southEastBack = ch;
     }
 
-    Point3<FLOAT> c = boundary.getCenter();
+    Point3<float> c = boundary.getCenter();
 }
 
 void OcTree::deleteChildren()
@@ -149,13 +149,13 @@ OcTree* const OcTree::getRoot(){
 }
 
 bool OcTree::InsertToParent(std::shared_ptr<Node3> n){
-    FLOAT l = getHalfLength();
-    Point3<FLOAT> c = getCenter();
+    float l = getHalfLength();
+    Point3<float> c = getCenter();
 
     // Find out what type the current node is
-    const Point3<FLOAT> np = n->getPos();
+    const Point3<float> np = n->getPos();
 
-    Point3<FLOAT> par_c;
+    Point3<float> par_c;
     int childType = 0;
     if (np.x < c.x && np.y > c.y && np.z > c.z){
         childType = CHILD_TYPE_SEB;
@@ -671,38 +671,38 @@ bool OcTree::Update(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& octs)
 
 void OcTree::Subdivide()
 {
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point3<FLOAT> c = boundary.getCenter();
+    float l = boundary.getHalfLength()*0.5;
+    Point3<float> c = boundary.getCenter();
 
-    Point3<FLOAT> nwf_c = Point3<FLOAT>(c.x-l,c.y+l,c.z+l);
+    Point3<float> nwf_c = Point3<float>(c.x-l,c.y+l,c.z+l);
     AABB3 nwf(nwf_c,l);
     northWestFront = new OcTree(nwf,this);
 
-    Point3<FLOAT> nef_c = Point3<FLOAT>(c.x+l,c.y+l,c.z+l);
+    Point3<float> nef_c = Point3<float>(c.x+l,c.y+l,c.z+l);
     AABB3 nef(nef_c,l);
     northEastFront =  new OcTree(nef,this);
 
-    Point3<FLOAT> swf_c = Point3<FLOAT>(c.x-l,c.y-l,c.z+l);
+    Point3<float> swf_c = Point3<float>(c.x-l,c.y-l,c.z+l);
     AABB3 swf(swf_c,l);
     southWestFront  =  new OcTree(swf,this);
 
-    Point3<FLOAT> sef_c = Point3<FLOAT>(c.x+l,c.y-l,c.z+l);
+    Point3<float> sef_c = Point3<float>(c.x+l,c.y-l,c.z+l);
     AABB3 sef(sef_c,l);
     southEastFront  =  new OcTree(sef,this);
 
-    Point3<FLOAT> nwb_c = Point3<FLOAT>(c.x-l,c.y+l,c.z-l);
+    Point3<float> nwb_c = Point3<float>(c.x-l,c.y+l,c.z-l);
     AABB3 nwb(nwb_c,l);
     northWestBack = new OcTree(nwb,this);
 
-    Point3<FLOAT> neb_c = Point3<FLOAT>(c.x+l,c.y+l,c.z-l);
+    Point3<float> neb_c = Point3<float>(c.x+l,c.y+l,c.z-l);
     AABB3 neb(neb_c,l);
     northEastBack =  new OcTree(neb,this);
 
-    Point3<FLOAT> swb_c = Point3<FLOAT>(c.x-l,c.y-l,c.z-l);
+    Point3<float> swb_c = Point3<float>(c.x-l,c.y-l,c.z-l);
     AABB3 swb(swb_c,l);
     southWestBack  =  new OcTree(swb,this);
 
-    Point3<FLOAT> seb_c = Point3<FLOAT>(c.x+l,c.y-l,c.z-l);
+    Point3<float> seb_c = Point3<float>(c.x+l,c.y-l,c.z-l);
     AABB3 seb(seb_c,l);
     southEastBack  =  new OcTree(seb,this);
 
@@ -713,61 +713,61 @@ void OcTree::Subdivide()
 
 void OcTree::SubdivideExcept(int childType)
 {
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point3<FLOAT> c = boundary.getCenter();
+    float l = boundary.getHalfLength()*0.5;
+    Point3<float> c = boundary.getCenter();
 
     if (childType != CHILD_TYPE_NWF)
     {
-        Point3<FLOAT> nwf_c = Point3<FLOAT>(c.x-l,c.y+l,c.z+l);
+        Point3<float> nwf_c = Point3<float>(c.x-l,c.y+l,c.z+l);
         AABB3 nwf(nwf_c,l);
         northWestFront = new OcTree(nwf,this);
     }
 
     if (childType != CHILD_TYPE_NEF)
     {
-        Point3<FLOAT> nef_c = Point3<FLOAT>(c.x+l,c.y+l,c.z+l);
+        Point3<float> nef_c = Point3<float>(c.x+l,c.y+l,c.z+l);
         AABB3 nef(nef_c,l);
         northEastFront =  new OcTree(nef,this);
     }
 
     if (childType != CHILD_TYPE_SWF)
     {
-         Point3<FLOAT> swf_c = Point3<FLOAT>(c.x-l,c.y-l,c.z+l);
+         Point3<float> swf_c = Point3<float>(c.x-l,c.y-l,c.z+l);
         AABB3 swf(swf_c,l);
         southWestFront  =  new OcTree(swf,this);
     }
 
     if (childType != CHILD_TYPE_SEF)
     {
-        Point3<FLOAT> sef_c = Point3<FLOAT>(c.x+l,c.y-l,c.z+l);
+        Point3<float> sef_c = Point3<float>(c.x+l,c.y-l,c.z+l);
         AABB3 sef(sef_c,l);
         southEastFront  =  new OcTree(sef,this);
     }
 
     if (childType != CHILD_TYPE_NWB)
     {
-        Point3<FLOAT> nwb_c = Point3<FLOAT>(c.x-l,c.y+l,c.z-l);
+        Point3<float> nwb_c = Point3<float>(c.x-l,c.y+l,c.z-l);
         AABB3 nwb(nwb_c,l);
         northWestBack = new OcTree(nwb,this);
     }
 
     if (childType != CHILD_TYPE_NEB)
     {
-        Point3<FLOAT> neb_c = Point3<FLOAT>(c.x+l,c.y+l,c.z-l);
+        Point3<float> neb_c = Point3<float>(c.x+l,c.y+l,c.z-l);
         AABB3 neb(neb_c,l);
         northEastBack =  new OcTree(neb,this);
     }
 
     if (childType != CHILD_TYPE_SWB)
     {
-        Point3<FLOAT> swb_c = Point3<FLOAT>(c.x-l,c.y-l,c.z-l);
+        Point3<float> swb_c = Point3<float>(c.x-l,c.y-l,c.z-l);
         AABB3 swb(swb_c,l);
         southWestBack  =  new OcTree(swb,this);
     }
 
     if (childType != CHILD_TYPE_SEB)
     {
-        Point3<FLOAT> seb_c = Point3<FLOAT>(c.x+l,c.y-l,c.z-l);
+        Point3<float> seb_c = Point3<float>(c.x+l,c.y-l,c.z-l);
         AABB3 seb(seb_c,l);
         southEastBack  =  new OcTree(seb,this);
     }
@@ -777,13 +777,13 @@ void OcTree::SubdivideExcept(int childType)
 
 void OcTree::printBoundary()
 {
-    Point3<FLOAT> c = boundary.getCenter();
+    Point3<float> c = boundary.getCenter();
     std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
 }
 
 void OcTree::printNodes()
 {
-    Point3<FLOAT> c = boundary.getCenter();
+    Point3<float> c = boundary.getCenter();
     std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
         if (gp != nullptr)
             std::cout << " (GP)" << std::endl;
@@ -792,7 +792,7 @@ void OcTree::printNodes()
         if (IsEmpty())
             std::cout << "  EMPTY"  << std::endl;
         else{
-            const Point3<FLOAT> cn = node->getPos();
+            const Point3<float> cn = node->getPos();
             std::cout << "   Pos: " << cn.x << "," << cn.y << "," << c.z << "  val:" << node->getVal() << "  sig:" << node->getPosNoise()  << std::endl;
         }
     }
@@ -921,7 +921,7 @@ void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs)
     return ;
 }
 
-void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs, std::vector<FLOAT>& sqdst)
+void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs, std::vector<float>& sqdst)
 {
 
     // Automatically abort if the range does not intersect this quad

@@ -85,7 +85,7 @@ void ObsGP1D::reset(){
     return;
 }
 
-void ObsGP1D::train( FLOAT xt[],  FLOAT f[], int N[])
+void ObsGP1D::train( float xt[],  float f[], int N[])
 {
     reset();
 
@@ -155,8 +155,8 @@ void ObsGP1D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
     int N = xt.cols();
 
     if (dim ==1){
-        FLOAT liml = (*(range.begin())+param.margin);
-        FLOAT limr = (*(range.end()-1)-param.margin);
+        float liml = (*(range.begin())+param.margin);
+        float limr = (*(range.end()-1)-param.margin);
         for (int k=0;k<N;k++){
 
             EVectorX f = val.segment(k,1);
@@ -204,7 +204,7 @@ void ObsGP2D::reset(){
     return;
 }
 
-void ObsGP2D::computePartition(FLOAT val[], int ni, int nj)
+void ObsGP2D::computePartition(float val[], int ni, int nj)
 {
     // number of data grid
     szSamples[0] = ni;
@@ -281,7 +281,7 @@ void ObsGP2D::getNumValidPoints(std::vector<int> &nPts)
     return;
 }
 
-void ObsGP2D::trainValidPoints(FLOAT xt[], FLOAT f[])
+void ObsGP2D::trainValidPoints(float xt[], float f[])
 {
     if (repartition)
         return;
@@ -299,8 +299,8 @@ void ObsGP2D::trainValidPoints(FLOAT xt[], FLOAT f[])
         int n=0;
         for (;(iti0 != Ind_i0.end() && iti1 != Ind_i1.end() && n < nGroup[0]);iti0++,iti1++,n++){
             // Dynamic array for valid inputs
-            std::vector<FLOAT> x_valid; // 2D array
-            std::vector<FLOAT> f_valid;
+            std::vector<float> x_valid; // 2D array
+            std::vector<float> f_valid;
 
             for (int j=*itj0; j<=*itj1; j++){
                 for (int i=*iti0; i<=*iti1; i++){
@@ -332,7 +332,7 @@ void ObsGP2D::trainValidPoints(FLOAT xt[], FLOAT f[])
     return;
 }
 
-void ObsGP2D::train( FLOAT xt[], FLOAT f[], int N[])
+void ObsGP2D::train( float xt[], float f[], int N[])
 {
     if ((N[0] > 0) && (N[1] > 0) && (xt !=0)){
         //std::cout << N[0] << "x" << N[1] << std::endl;
@@ -346,7 +346,7 @@ void ObsGP2D::train( FLOAT xt[], FLOAT f[], int N[])
     return;
 }
 
-void ObsGP2D::train( FLOAT xt[],  FLOAT f[], int N[], std::vector<int>& numSamples)
+void ObsGP2D::train( float xt[],  float f[], int N[], std::vector<int>& numSamples)
 {
     train(xt, f, N);
     getNumValidPoints(numSamples);

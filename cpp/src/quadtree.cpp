@@ -22,14 +22,14 @@
 #define EPS 1e-12
 
 
-FLOAT sqdist(const Point<FLOAT>& pt1, const Point<FLOAT>& pt2)
+float sqdist(const Point<float>& pt1, const Point<float>& pt2)
 {
-    FLOAT dx = (pt1.x - pt2.x);
-    FLOAT dy = (pt1.y - pt2.y);
+    float dx = (pt1.x - pt2.x);
+    float dy = (pt1.y - pt2.y);
     return dx*dx + dy*dy;
 }
 
-QuadTree::QuadTree(Point<FLOAT> c):
+QuadTree::QuadTree(Point<float> c):
         northWest(0),
         northEast(0),
         southWest(0),
@@ -122,13 +122,13 @@ QuadTree* const QuadTree::getRoot(){
 }
 
 bool QuadTree::InsertToParent(std::shared_ptr<Node> n){
-    FLOAT l = getHalfLength();
-    Point<FLOAT> c = getCenter();
+    float l = getHalfLength();
+    Point<float> c = getCenter();
 
     // Find out what type the current node is
-    const Point<FLOAT> np = n->getPos();
+    const Point<float> np = n->getPos();
 
-    Point<FLOAT> par_c;
+    Point<float> par_c;
     int childType = 0;
     if (np.x < c.x && np.y > c.y){
         childType = CHILD_TYPE_SE;
@@ -512,21 +512,21 @@ bool QuadTree::Update(std::shared_ptr<Node> n, std::unordered_set<QuadTree*>& qu
 
 void QuadTree::Subdivide()
 {
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point<FLOAT> c = boundary.getCenter();
-    Point<FLOAT> nw_c = Point<FLOAT>(c.x-l,c.y+l);
+    float l = boundary.getHalfLength()*0.5;
+    Point<float> c = boundary.getCenter();
+    Point<float> nw_c = Point<float>(c.x-l,c.y+l);
     AABB nw(nw_c,l);
     northWest = new QuadTree(nw,this);
 
-    Point<FLOAT> ne_c = Point<FLOAT>(c.x+l,c.y+l);
+    Point<float> ne_c = Point<float>(c.x+l,c.y+l);
     AABB ne(ne_c,l);
     northEast =  new QuadTree(ne,this);
 
-    Point<FLOAT> sw_c = Point<FLOAT>(c.x-l,c.y-l);
+    Point<float> sw_c = Point<float>(c.x-l,c.y-l);
     AABB sw(sw_c,l);
     southWest =  new QuadTree(sw,this);
 
-    Point<FLOAT> se_c = Point<FLOAT>(c.x+l,c.y-l);
+    Point<float> se_c = Point<float>(c.x+l,c.y-l);
     AABB se(se_c,l);
     southEast =  new QuadTree(se,this);
 
@@ -537,33 +537,33 @@ void QuadTree::Subdivide()
 
 void QuadTree::SubdivideExcept(int childType)
 {
-    FLOAT l = boundary.getHalfLength()*0.5;
-    Point<FLOAT> c = boundary.getCenter();
+    float l = boundary.getHalfLength()*0.5;
+    Point<float> c = boundary.getCenter();
 
     if (childType != CHILD_TYPE_NW)
     {
-        Point<FLOAT> nw_c = Point<FLOAT>(c.x-l,c.y+l);
+        Point<float> nw_c = Point<float>(c.x-l,c.y+l);
         AABB nw(nw_c,l);
         northWest = new QuadTree(nw,this);
     }
 
     if (childType != CHILD_TYPE_NE)
     {
-        Point<FLOAT> ne_c = Point<FLOAT>(c.x+l,c.y+l);
+        Point<float> ne_c = Point<float>(c.x+l,c.y+l);
         AABB ne(ne_c,l);
         northEast = new QuadTree(ne,this);
     }
 
     if (childType != CHILD_TYPE_SW)
     {
-        Point<FLOAT> sw_c = Point<FLOAT>(c.x-l,c.y-l);
+        Point<float> sw_c = Point<float>(c.x-l,c.y-l);
         AABB sw(sw_c,l);
         southWest = new QuadTree(sw,this);
     }
 
     if (childType != CHILD_TYPE_SE)
     {
-        Point<FLOAT> se_c = Point<FLOAT>(c.x+l,c.y-l);
+        Point<float> se_c = Point<float>(c.x+l,c.y-l);
         AABB se(se_c,l);
         southEast = new QuadTree(se,this);
     }
@@ -573,13 +573,13 @@ void QuadTree::SubdivideExcept(int childType)
 
 void QuadTree::printBoundary()
 {
-    Point<FLOAT> c = boundary.getCenter();
+    Point<float> c = boundary.getCenter();
     std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" ;
 }
 
 void QuadTree::printNodes()
 {
-    Point<FLOAT> c = boundary.getCenter();
+    Point<float> c = boundary.getCenter();
     std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" ;
         if (gp != nullptr)
             std::cout << " (GP)" << std::endl;
@@ -588,7 +588,7 @@ void QuadTree::printNodes()
         if (IsEmpty())
             std::cout << "  EMPTY"  << std::endl;
         else{
-            const Point<FLOAT> cn = node->getPos();
+            const Point<float> cn = node->getPos();
             std::cout << "   Pos: " << cn.x << "," << cn.y << "  val:" << node->getVal();
             std::cout << "  sig:" << node->getPosNoise()  << "  grad_sig:" << node->getGradNoise()  << std::endl;
         }
@@ -689,7 +689,7 @@ void QuadTree::QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads)
     return ;
 }
 
-void QuadTree::QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads, std::vector<FLOAT>& sqdst)
+void QuadTree::QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads, std::vector<float>& sqdst)
 {
 
     // Automatically abort if the range does not intersect this quad

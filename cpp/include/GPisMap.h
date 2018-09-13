@@ -27,17 +27,17 @@
 #include <chrono>
 
 typedef struct GPisMapParam_{
-    FLOAT delx;         // numerical step delta (e.g. surface normal sampling)
-    FLOAT fbias;        // constant map bias values (mean of GP)
-    FLOAT sensor_offset[2];
-    FLOAT angle_obs_limit[2];
-    FLOAT obs_var_thre; // threshold for variance of ObsGP
+    float delx;         // numerical step delta (e.g. surface normal sampling)
+    float fbias;        // constant map bias values (mean of GP)
+    float sensor_offset[2];
+    float angle_obs_limit[2];
+    float obs_var_thre; // threshold for variance of ObsGP
                         //  - If var(prediction) > v_thre, then don't rely on the prediction.
-    FLOAT min_position_noise;
-    FLOAT min_grad_noise;
+    float min_position_noise;
+    float min_grad_noise;
 
-    FLOAT map_scale_param;
-    FLOAT map_noise_param;
+    float map_scale_param;
+    float map_noise_param;
 
     int useCuda;
 
@@ -79,7 +79,7 @@ protected:
     const int mapDimension = 2;
 
     void init();
-    bool preproData( FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
+    bool preproData( float * datax,  float * dataf, int N, std::vector<float> & pose);
     bool regressObs();
     void updateMapPoints();
     void reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes);
@@ -88,15 +88,15 @@ protected:
     void updateGPs();
 
     ObsGP* gpo;
-    std::vector<FLOAT> obs_theta;
-    std::vector<FLOAT> obs_range;
-    std::vector<FLOAT> obs_f;
-    std::vector<FLOAT> obs_xylocal;
-    std::vector<FLOAT> obs_xyglobal;
-    std::vector<FLOAT> pose_tr;
-    std::vector<FLOAT> pose_R;
+    std::vector<float> obs_theta;
+    std::vector<float> obs_range;
+    std::vector<float> obs_f;
+    std::vector<float> obs_xylocal;
+    std::vector<float> obs_xyglobal;
+    std::vector<float> pose_tr;
+    std::vector<float> pose_R;
     int obs_numdata;
-    FLOAT range_obs_max;
+    float range_obs_max;
 
     double runtime[4];
 
@@ -106,12 +106,12 @@ public:
     ~GPisMap();
     void reset();
 
-    void update(  FLOAT * datax,  FLOAT * dataf, int N, std::vector<FLOAT> & pose);
-    bool test( FLOAT* x, int dim, int leng, FLOAT * res);
+    void update(  float * datax,  float * dataf, int N, std::vector<float> & pose);
+    bool test( float* x, int dim, int leng, float * res);
 
     int getMapDimension(){return mapDimension;}
-    void getAllPoints(std::vector<FLOAT> & pos);
-    void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var, std::vector<FLOAT> &grad,  std::vector<FLOAT> &grad_var);
+    void getAllPoints(std::vector<float> & pos);
+    void getAllPoints(std::vector<float> & pos, std::vector<float> &var, std::vector<float> &grad,  std::vector<float> &grad_var);
 
     double getRuntime0(){return runtime[0];}
     double getRuntime1(){return runtime[1];}
@@ -122,8 +122,8 @@ private:
     void test_kernel(int thread_idx,
                      int start_idx,
                      int end_idx,
-                     FLOAT *x,
-                     FLOAT *res);
+                     float *x,
+                     float *res);
 
     void updateGPs_kernel(int thread_idx,
                           int start_idx,

@@ -25,23 +25,23 @@
 #include <memory>
 #include <iostream>
 #include <cstdint>
-#include "strct.h" // FLOAT is defined in this file
+#include "strct.h"
 #include "OnGPIS.h"
 
 class AABB
 {
-    Point<FLOAT> center;
-    FLOAT halfLength;
-    FLOAT halfLengthSq;
-    FLOAT xmin;
-    FLOAT xmax;
-    FLOAT ymin;
-    FLOAT ymax;
+    Point<float> center;
+    float halfLength;
+    float halfLengthSq;
+    float xmin;
+    float xmax;
+    float ymin;
+    float ymax;
 
-    Point<FLOAT> ptNW;
-    Point<FLOAT> ptNE;
-    Point<FLOAT> ptSW;
-    Point<FLOAT> ptSE;
+    Point<float> ptNW;
+    Point<float> ptNE;
+    Point<float> ptSW;
+    Point<float> ptSE;
 public:
     AABB(){
         halfLength = 0.0;
@@ -51,7 +51,7 @@ public:
         ymin = 0.0;
         ymax = 0.0;
     }
-    AABB(Point<FLOAT> _center, FLOAT _halfLength) {
+    AABB(Point<float> _center, float _halfLength) {
         center = _center;
         halfLength = _halfLength;
         halfLengthSq = halfLength*halfLength;
@@ -59,38 +59,38 @@ public:
         xmax = center.x + halfLength;
         ymin = center.y - halfLength;
         ymax = center.y + halfLength;
-        ptNW = Point<FLOAT>(xmin,ymax);
-        ptNE = Point<FLOAT>(xmax,ymax);
-        ptSW = Point<FLOAT>(xmin,ymin);
-        ptSE = Point<FLOAT>(xmax,ymin);
+        ptNW = Point<float>(xmin,ymax);
+        ptNE = Point<float>(xmax,ymax);
+        ptSW = Point<float>(xmin,ymin);
+        ptSE = Point<float>(xmax,ymin);
     }
-    AABB(FLOAT x, FLOAT y, FLOAT _halfLength) {
-        center = Point<FLOAT>(x,y);
+    AABB(float x, float y, float _halfLength) {
+        center = Point<float>(x,y);
         halfLength = _halfLength;
         halfLengthSq = halfLength*halfLength;
         xmin = center.x - halfLength;
         xmax = center.x + halfLength;
         ymin = center.y - halfLength;
         ymax = center.y + halfLength;
-        ptNW = Point<FLOAT>(xmin,ymax);
-        ptNE = Point<FLOAT>(xmax,ymax);
-        ptSW = Point<FLOAT>(xmin,ymin);
-        ptSE = Point<FLOAT>(xmax,ymin);
+        ptNW = Point<float>(xmin,ymax);
+        ptNE = Point<float>(xmax,ymax);
+        ptSW = Point<float>(xmin,ymin);
+        ptSE = Point<float>(xmax,ymin);
     }
 
-    const Point<FLOAT> getCenter(){return center;}
-    FLOAT getHalfLength(){return halfLength;}
-    FLOAT getHalfLengthSq(){return halfLengthSq;}
-    FLOAT getXMinbound(){return xmin;}
-    FLOAT getXMaxbound(){return xmax;}
-    FLOAT getYMinbound(){return ymin;}
-    FLOAT getYMaxbound(){return ymax;}
-    const Point<FLOAT>& getNW(){return ptNW;}
-    const Point<FLOAT>& getNE(){return ptNE;}
-    const Point<FLOAT>& getSW(){return ptSW;}
-    const Point<FLOAT>& getSE(){return ptSE;}
+    const Point<float> getCenter(){return center;}
+    float getHalfLength(){return halfLength;}
+    float getHalfLengthSq(){return halfLengthSq;}
+    float getXMinbound(){return xmin;}
+    float getXMaxbound(){return xmax;}
+    float getYMinbound(){return ymin;}
+    float getYMaxbound(){return ymax;}
+    const Point<float>& getNW(){return ptNW;}
+    const Point<float>& getNE(){return ptNE;}
+    const Point<float>& getSW(){return ptSW;}
+    const Point<float>& getSE(){return ptSE;}
 
-    bool containsPoint(Point<FLOAT> pt) {
+    bool containsPoint(Point<float> pt) {
         return ((pt.x > xmin) &&
             (pt.x < xmax) &&
             (pt.y > ymin) &&
@@ -167,7 +167,7 @@ public:
             node(nullptr),
             gp(nullptr){}
 
-    QuadTree(Point<FLOAT> center);
+    QuadTree(Point<float> center);
 
     ~QuadTree(){
         deleteChildren();
@@ -201,19 +201,19 @@ public:
     bool Remove(std::shared_ptr<Node> n);
     void QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes);
     void QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads);
-    void QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads, std::vector<FLOAT>& sqdst);
+    void QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads, std::vector<float>& sqdst);
     void QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads, std::vector<std::vector<std::shared_ptr<Node> > >& nodes);
 
     int32_t getNodeCount(){return numNodes;}
-    Point<FLOAT> getCenter(){return boundary.getCenter();}
-    FLOAT getHalfLength(){return boundary.getHalfLength();}
-    FLOAT getXMaxbound(){return boundary.getXMaxbound();}
-    FLOAT getYMinbound(){return boundary.getYMinbound();}
-    FLOAT getYMaxbound(){return boundary.getYMaxbound();}
-    Point<FLOAT> getNW(){return boundary.getNW();}
-    Point<FLOAT> getNE(){return boundary.getNE();}
-    Point<FLOAT> getSW(){return boundary.getSW();}
-    Point<FLOAT> getSE(){return boundary.getSE();}
+    Point<float> getCenter(){return boundary.getCenter();}
+    float getHalfLength(){return boundary.getHalfLength();}
+    float getXMaxbound(){return boundary.getXMaxbound();}
+    float getYMinbound(){return boundary.getYMinbound();}
+    float getYMaxbound(){return boundary.getYMaxbound();}
+    Point<float> getNW(){return boundary.getNW();}
+    Point<float> getNE(){return boundary.getNE();}
+    Point<float> getSW(){return boundary.getSW();}
+    Point<float> getSE(){return boundary.getSE();}
 
     void getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node> >& nodes);
 

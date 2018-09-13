@@ -25,29 +25,29 @@
 #include <memory>
 #include <iostream>
 #include <cstdint>
-#include "strct.h" // FLOAT is defined in this file
+#include "strct.h"
 #include "OnGPIS.h"
 
 class AABB3
 {
-    Point3<FLOAT> center;
-    FLOAT halfLength;
-    FLOAT halfLengthSq;
-    FLOAT xmin;
-    FLOAT xmax;
-    FLOAT ymin;
-    FLOAT ymax;
-    FLOAT zmin;
-    FLOAT zmax;
+    Point3<float> center;
+    float halfLength;
+    float halfLengthSq;
+    float xmin;
+    float xmax;
+    float ymin;
+    float ymax;
+    float zmin;
+    float zmax;
 
-    Point3<FLOAT> ptNWF;
-    Point3<FLOAT> ptNEF;
-    Point3<FLOAT> ptSWF;
-    Point3<FLOAT> ptSEF;
-    Point3<FLOAT> ptNWB;
-    Point3<FLOAT> ptNEB;
-    Point3<FLOAT> ptSWB;
-    Point3<FLOAT> ptSEB;
+    Point3<float> ptNWF;
+    Point3<float> ptNEF;
+    Point3<float> ptSWF;
+    Point3<float> ptSEF;
+    Point3<float> ptNWB;
+    Point3<float> ptNEB;
+    Point3<float> ptSWB;
+    Point3<float> ptSEB;
 public:
     AABB3(){
         halfLength = 0.0;
@@ -59,7 +59,7 @@ public:
         zmin = 0.0;
         zmax = 0.0;
     }
-    AABB3(Point3<FLOAT> _center, FLOAT _halfLength) {
+    AABB3(Point3<float> _center, float _halfLength) {
         center = _center;
         halfLength = _halfLength;
         halfLengthSq = halfLength*halfLength;
@@ -69,17 +69,17 @@ public:
         ymax = center.y + halfLength;
         zmin = center.z - halfLength;
         zmax = center.z + halfLength;
-        ptNWF = Point3<FLOAT>(xmin,ymax,zmax);
-        ptNEF = Point3<FLOAT>(xmax,ymax,zmax);
-        ptSWF = Point3<FLOAT>(xmin,ymin,zmax);
-        ptSEF = Point3<FLOAT>(xmax,ymin,zmax);
-        ptNWB = Point3<FLOAT>(xmin,ymax,zmin);
-        ptNEB = Point3<FLOAT>(xmax,ymax,zmin);
-        ptSWB = Point3<FLOAT>(xmin,ymin,zmin);
-        ptSEB = Point3<FLOAT>(xmax,ymin,zmin);
+        ptNWF = Point3<float>(xmin,ymax,zmax);
+        ptNEF = Point3<float>(xmax,ymax,zmax);
+        ptSWF = Point3<float>(xmin,ymin,zmax);
+        ptSEF = Point3<float>(xmax,ymin,zmax);
+        ptNWB = Point3<float>(xmin,ymax,zmin);
+        ptNEB = Point3<float>(xmax,ymax,zmin);
+        ptSWB = Point3<float>(xmin,ymin,zmin);
+        ptSEB = Point3<float>(xmax,ymin,zmin);
     }
-    AABB3(FLOAT x, FLOAT y, FLOAT z, FLOAT _halfLength) {
-        center = Point3<FLOAT>(x,y,z);
+    AABB3(float x, float y, float z, float _halfLength) {
+        center = Point3<float>(x,y,z);
         halfLength = _halfLength;
         halfLengthSq = halfLength*halfLength;
         xmin = center.x - halfLength;
@@ -88,35 +88,35 @@ public:
         ymax = center.y + halfLength;
         zmin = center.z - halfLength;
         zmax = center.z + halfLength;
-        ptNWF = Point3<FLOAT>(xmin,ymax,zmax);
-        ptNEF = Point3<FLOAT>(xmax,ymax,zmax);
-        ptSWF = Point3<FLOAT>(xmin,ymin,zmax);
-        ptSEF = Point3<FLOAT>(xmax,ymin,zmax);
-        ptNWB = Point3<FLOAT>(xmin,ymax,zmin);
-        ptNEB = Point3<FLOAT>(xmax,ymax,zmin);
-        ptSWB = Point3<FLOAT>(xmin,ymin,zmin);
-        ptSEB = Point3<FLOAT>(xmax,ymin,zmin);
+        ptNWF = Point3<float>(xmin,ymax,zmax);
+        ptNEF = Point3<float>(xmax,ymax,zmax);
+        ptSWF = Point3<float>(xmin,ymin,zmax);
+        ptSEF = Point3<float>(xmax,ymin,zmax);
+        ptNWB = Point3<float>(xmin,ymax,zmin);
+        ptNEB = Point3<float>(xmax,ymax,zmin);
+        ptSWB = Point3<float>(xmin,ymin,zmin);
+        ptSEB = Point3<float>(xmax,ymin,zmin);
     }
 
-    const Point3<FLOAT> getCenter(){return center;}
-    FLOAT getHalfLength(){return halfLength;}
-    FLOAT getHalfLengthSq(){return halfLengthSq;}
-    FLOAT getXMinbound(){return xmin;}
-    FLOAT getXMaxbound(){return xmax;}
-    FLOAT getYMinbound(){return ymin;}
-    FLOAT getYMaxbound(){return ymax;}
-    FLOAT getZMinbound(){return zmin;}
-    FLOAT getZMaxbound(){return zmax;}
-    const Point3<FLOAT>& getNWF(){return ptNWF;}
-    const Point3<FLOAT>& getNEF(){return ptNEF;}
-    const Point3<FLOAT>& getSWF(){return ptSWF;}
-    const Point3<FLOAT>& getSEF(){return ptSEF;}
-    const Point3<FLOAT>& getNWB(){return ptNWB;}
-    const Point3<FLOAT>& getNEB(){return ptNEB;}
-    const Point3<FLOAT>& getSWB(){return ptSWB;}
-    const Point3<FLOAT>& getSEB(){return ptSEB;}
+    const Point3<float> getCenter(){return center;}
+    float getHalfLength(){return halfLength;}
+    float getHalfLengthSq(){return halfLengthSq;}
+    float getXMinbound(){return xmin;}
+    float getXMaxbound(){return xmax;}
+    float getYMinbound(){return ymin;}
+    float getYMaxbound(){return ymax;}
+    float getZMinbound(){return zmin;}
+    float getZMaxbound(){return zmax;}
+    const Point3<float>& getNWF(){return ptNWF;}
+    const Point3<float>& getNEF(){return ptNEF;}
+    const Point3<float>& getSWF(){return ptSWF;}
+    const Point3<float>& getSEF(){return ptSEF;}
+    const Point3<float>& getNWB(){return ptNWB;}
+    const Point3<float>& getNEB(){return ptNEB;}
+    const Point3<float>& getSWB(){return ptSWB;}
+    const Point3<float>& getSEB(){return ptSEB;}
 
-    bool containsPoint(Point3<FLOAT> pt) {
+    bool containsPoint(Point3<float> pt) {
         return ((pt.x > xmin) &&
             (pt.x < xmax) &&
             (pt.y > ymin) &&
@@ -211,7 +211,7 @@ public:
             closestChildNode(nullptr),
             gp(nullptr){}
 
-    OcTree(Point3<FLOAT> c);
+    OcTree(Point3<float> c);
 
     ~OcTree(){
         deleteChildren();
@@ -240,26 +240,26 @@ public:
     bool Remove(std::shared_ptr<Node3> n);
     void QueryRange(AABB3 range, std::vector<std::shared_ptr<Node3> >& nodes);
     void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads);
-    void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads, std::vector<FLOAT>& sqdst);
+    void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads, std::vector<float>& sqdst);
     void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads, std::vector<std::vector<std::shared_ptr<Node3> > >& nodes);
 
 
     int32_t getNodeCount(){return numNodes;}
-    Point3<FLOAT> getCenter(){return boundary.getCenter();}
-    FLOAT getHalfLength(){return boundary.getHalfLength();}
-    FLOAT getXMaxbound(){return boundary.getXMaxbound();}
-    FLOAT getYMinbound(){return boundary.getYMinbound();}
-    FLOAT getYMaxbound(){return boundary.getYMaxbound();}
-    FLOAT getZMinbound(){return boundary.getZMinbound();}
-    FLOAT getZMaxbound(){return boundary.getZMaxbound();}
-    Point3<FLOAT> getNWF(){return boundary.getNWF();}
-    Point3<FLOAT> getNEF(){return boundary.getNEF();}
-    Point3<FLOAT> getSWF(){return boundary.getSWF();}
-    Point3<FLOAT> getSEF(){return boundary.getSEF();}
-    Point3<FLOAT> getNWB(){return boundary.getNWB();}
-    Point3<FLOAT> getNEB(){return boundary.getNEB();}
-    Point3<FLOAT> getSWB(){return boundary.getSWB();}
-    Point3<FLOAT> getSEB(){return boundary.getSEB();}
+    Point3<float> getCenter(){return boundary.getCenter();}
+    float getHalfLength(){return boundary.getHalfLength();}
+    float getXMaxbound(){return boundary.getXMaxbound();}
+    float getYMinbound(){return boundary.getYMinbound();}
+    float getYMaxbound(){return boundary.getYMaxbound();}
+    float getZMinbound(){return boundary.getZMinbound();}
+    float getZMaxbound(){return boundary.getZMaxbound();}
+    Point3<float> getNWF(){return boundary.getNWF();}
+    Point3<float> getNEF(){return boundary.getNEF();}
+    Point3<float> getSWF(){return boundary.getSWF();}
+    Point3<float> getSEF(){return boundary.getSEF();}
+    Point3<float> getNWB(){return boundary.getNWB();}
+    Point3<float> getNEB(){return boundary.getNEB();}
+    Point3<float> getSWB(){return boundary.getSWB();}
+    Point3<float> getSEB(){return boundary.getSEB();}
 
     void getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& nodes);
 

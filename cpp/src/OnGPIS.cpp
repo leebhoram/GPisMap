@@ -174,7 +174,7 @@ void OnGPIS::test(const EMatrixX& xt,EVectorX& val, EMatrixX& gradval, EVectorX&
     return;
 }
 
-void OnGPIS::testSinglePoint(const EVectorX& xt, FLOAT& val, FLOAT grad[],FLOAT var[])
+void OnGPIS::testSinglePoint(const EVectorX& xt, float& val, float grad[],float var[])
 {
     if (!isTrained())
         return;
@@ -216,7 +216,7 @@ void OnGPIS::testSinglePoint(const EVectorX& xt, FLOAT& val, FLOAT grad[],FLOAT 
     return;
 }
 
-void OnGPIS::test2Dpoint(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady)
+void OnGPIS::test2Dpoint(const EVectorX& xt,float& val, float& gradx, float& grady, float& varval ,float& vargradx, float &vargrady)
 {
     if (!isTrained()){
         return;
@@ -239,7 +239,7 @@ void OnGPIS::test2Dpoint(const EVectorX& xt,FLOAT& val, FLOAT& gradx, FLOAT& gra
 
 }
 
-void OnGPIS::test2Dpoint(FLOAT px, FLOAT py,FLOAT& val, FLOAT& gradx, FLOAT& grady, FLOAT& varval ,FLOAT& vargradx, FLOAT &vargrady)
+void OnGPIS::test2Dpoint(float px, float py,float& val, float& gradx, float& grady, float& varval ,float& vargradx, float &vargrady)
 {
     if (!isTrained()){
         return;

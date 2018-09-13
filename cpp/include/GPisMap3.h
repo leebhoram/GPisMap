@@ -26,10 +26,10 @@
 #include "octree.h"
 
 typedef struct camParam_{
-    FLOAT fx;
-    FLOAT fy;
-    FLOAT cx;
-    FLOAT cy;
+    float fx;
+    float fy;
+    float cx;
+    float cy;
     int width;
     int height;
 
@@ -41,20 +41,20 @@ typedef struct camParam_{
         cx = 310;// 307;
         cy = 224; //240;
     }
-    camParam_(FLOAT fx_, FLOAT fy_, FLOAT cx_, FLOAT cy_, FLOAT w_, FLOAT h_): fx(fx_),fy(fy_), cx(cx_), cy(cy_), width(w_), height(h_){}
+    camParam_(float fx_, float fy_, float cx_, float cy_, float w_, float h_): fx(fx_),fy(fy_), cx(cx_), cy(cy_), width(w_), height(h_){}
 } camParam;
 
 typedef struct GPisMap3Param_{
-    FLOAT delx;         // numerical step delta (e.g. surface normal sampling)
-    FLOAT fbias;        // constant map bias values (mean of GP)
-    FLOAT obs_var_thre; // threshold for variance of ObsGP
+    float delx;         // numerical step delta (e.g. surface normal sampling)
+    float fbias;        // constant map bias values (mean of GP)
+    float obs_var_thre; // threshold for variance of ObsGP
                         //  - If var(prediction) > v_thre, then don't rely on the prediction.
     int obs_skip;     // use every 'skip'-th pixel
-    FLOAT min_position_noise;
-    FLOAT min_grad_noise;
+    float min_position_noise;
+    float min_grad_noise;
 
-    FLOAT map_scale_param;
-    FLOAT map_noise_param;
+    float map_scale_param;
+    float map_noise_param;
 
     GPisMap3Param_(){
         delx = 1e-3;
@@ -84,18 +84,18 @@ protected:
     GPisMap3Param setting;
     camParam cam;
 
-    FLOAT u_obs_limit[2];
-    FLOAT v_obs_limit[2];
+    float u_obs_limit[2];
+    float v_obs_limit[2];
 
-    std::vector<FLOAT> vu_grid;
+    std::vector<float> vu_grid;
 
     OcTree* t;
     std::unordered_set<OcTree*> activeSet;
     const int mapDimension = 3;
-    FLOAT runtime[4];
+    float runtime[4];
 
     void init();
-    bool preprocData( FLOAT * dataz, int N, std::vector<FLOAT> & pose);
+    bool preprocData( float * dataz, int N, std::vector<float> & pose);
     bool regressObs();
     void updateMapPoints();
     void reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes);
@@ -104,15 +104,15 @@ protected:
     void updateGPs();
 
     ObsGP* gpo;
-    std::vector<FLOAT> obs_valid_u;
-    std::vector<FLOAT> obs_valid_v;
-    std::vector<FLOAT> obs_zinv;
-    std::vector<FLOAT> obs_valid_xyzlocal;
-    std::vector<FLOAT> obs_valid_xyzglobal;
-    std::vector<FLOAT> pose_tr;
-    std::vector<FLOAT> pose_R;
+    std::vector<float> obs_valid_u;
+    std::vector<float> obs_valid_v;
+    std::vector<float> obs_zinv;
+    std::vector<float> obs_valid_xyzlocal;
+    std::vector<float> obs_valid_xyzglobal;
+    std::vector<float> pose_tr;
+    std::vector<float> pose_R;
     int obs_numdata;
-    FLOAT range_obs_max;
+    float range_obs_max;
 
 public:
     GPisMap3();
@@ -121,12 +121,12 @@ public:
     ~GPisMap3();
     void reset();
 
-    void update( FLOAT * dataz, int N, std::vector<FLOAT> & pose);
-    bool test( FLOAT* x, int dim, int leng, FLOAT * res);
+    void update( float * dataz, int N, std::vector<float> & pose);
+    bool test( float* x, int dim, int leng, float * res);
     void resetCam(camParam c);
 
-    void getAllPoints(std::vector<FLOAT> & pos);
-    void getAllPoints(std::vector<FLOAT> & pos, std::vector<FLOAT> &var, std::vector<FLOAT> &grad,  std::vector<FLOAT> &grad_var);
+    void getAllPoints(std::vector<float> & pos);
+    void getAllPoints(std::vector<float> & pos, std::vector<float> &var, std::vector<float> &grad,  std::vector<float> &grad_var);
 
     double getRuntime0(){return runtime[0];}
     double getRuntime1(){return runtime[1];}
@@ -137,8 +137,8 @@ private:
     void test_kernel(int thread_idx,
                      int start_idx,
                      int end_idx,
-                     FLOAT *x,
-                     FLOAT *res);
+                     float *x,
+                     float *res);
 
     void updateGPs_kernel(int thread_idx,
                           int start_idx,

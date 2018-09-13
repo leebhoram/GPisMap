@@ -59,29 +59,16 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
 
         if ( numDim == 2 && (nrhs == 3))
         {
-            if (sizeof(FLOAT) == sizeof(double)){ // double-precision
-                if (mxDOUBLE_CLASS != mxGetClassID(prhs[1]) ||
-                    mxDOUBLE_CLASS != mxGetClassID(prhs[2]) ){
-                    std::cout << "The input data must be double type. @ train()" << std::endl;
-                    return;
-                }
-            }
-            else if (sizeof(FLOAT) == sizeof(float)) { // single-precision
-                if (mxSINGLE_CLASS != mxGetClassID(prhs[1]) ||
-                    mxSINGLE_CLASS != mxGetClassID(prhs[2]) ){
-                    std::cout << "The input data must be float (single) type.  @ train()" << std::endl;
-                    return;
-                }
-            }
-            else {
-                std::cout << "The input data must be float (single or double) type. @ train()" << std::endl;
+            if (mxSINGLE_CLASS != mxGetClassID(prhs[1]) ||
+                mxSINGLE_CLASS != mxGetClassID(prhs[2]) ){
+                std::cout << "The input data must be float (single) type.  @ train()" << std::endl;
                 return;
             }
 
-            FLOAT * pz = (FLOAT *)mxGetData(prhs[1]);
-            FLOAT * ppose = (FLOAT *)mxGetData(prhs[2]);
+            float * pz = (float *)mxGetData(prhs[1]);
+            float * ppose = (float *)mxGetData(prhs[2]);
 
-            std::vector<FLOAT> pose(ppose, ppose + mxGetNumberOfElements(prhs[2]) );
+            std::vector<float> pose(ppose, ppose + mxGetNumberOfElements(prhs[2]) );
 
             if (nlhs > 0){
                 plhs[0] = mxCreateDoubleMatrix(1,1,mxREAL);
@@ -113,30 +100,18 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
         if (dim !=3)
             return;
 
-        if (sizeof(FLOAT) == sizeof(double)){ // double-precision
-            if (mxDOUBLE_CLASS != mxGetClassID(prhs[1]) ){
-                std::cout << "The input data must be double type.  @ test()" << std::endl;
-                return;
-            }
-        }
-        else if (sizeof(FLOAT) == sizeof(float))  { // single-precision
             if (mxSINGLE_CLASS != mxGetClassID(prhs[1])){
                 std::cout << "The input data must be float (single) type. @ test()" << std::endl;
                 return;
             }
-        }
-        else {
-            std::cout << "The input data must be float (single or double) type. @ test()" << std::endl;
-            return;
-        }
 
         if ((gpm != 0) && (N > 0)){
-            FLOAT* px = (FLOAT *)mxGetData(prhs[1]);
+            float* px = (float *)mxGetData(prhs[1]);
 
-            if (sizeof(FLOAT) == sizeof(double)){
+            if (sizeof(float) == sizeof(double)){
                 plhs[0] = mxCreateDoubleMatrix(2*(1+dim),N,mxREAL);   // f-value[0],  grad-value[1,2], variances[3-5]
             }
-            else if (sizeof(FLOAT) == sizeof(float)){
+            else if (sizeof(float) == sizeof(float)){
                 plhs[0] = mxCreateNumericMatrix(2*(1+dim),N,mxSINGLE_CLASS, mxREAL);
             }
 
@@ -146,7 +121,7 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
                 t1 = std::chrono::high_resolution_clock::now();
             }
 
-            FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
+            float *pRes   = (float*)mxGetPr(plhs[0]);
             gpm->test(px, dim, N, pRes);
 
             // test time
@@ -166,19 +141,14 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
     }
     else if (commstr.compare("getAllPoints")==0){
         if (gpm != 0){
-            std::vector<FLOAT> pos;
+            std::vector<float> pos;
             gpm->getAllPoints(pos);
 
             int N = pos.size()/3; // 2D
             if (N > 0){
-                if (sizeof(FLOAT) == sizeof(double)){
-                    plhs[0] = mxCreateDoubleMatrix(3,N,mxREAL);
-                }
-                else if (sizeof(FLOAT) == sizeof(float)){
-                    plhs[0] = mxCreateNumericMatrix(3,N,mxSINGLE_CLASS, mxREAL);
-                }
-                FLOAT *pRes   = (FLOAT*)mxGetPr(plhs[0]);
-                memcpy(pRes,pos.data(),sizeof(FLOAT)*3*N);
+                plhs[0] = mxCreateNumericMatrix(3,N,mxSINGLE_CLASS, mxREAL);
+                float *pRes   = (float*)mxGetPr(plhs[0]);
+                memcpy(pRes,pos.data(),sizeof(float)*3*N);
             }
         }
     }

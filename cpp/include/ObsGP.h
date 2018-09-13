@@ -26,8 +26,8 @@
 #include <iostream>
 #include <cstdint>
 #include <Eigen/Dense>
-#include "strct.h"    // FLOAT and __USE_DOUBLE_PRECISION__ is defined in this file
-                      // Currently, "typedef double FLOAT"
+#include "strct.h"
+
 
 #define DEFAULT_SCALE_PARAM 0.5
 #define DEFAULT_NOISE_PARAM 0.01
@@ -60,8 +60,8 @@ class GPou{
     EVectorX alpha;
 
     int dim; // need this?
-    const FLOAT scale = DEFAULT_SCALE_PARAM;
-    const FLOAT noise = DEFAULT_NOISE_PARAM;
+    const float scale = DEFAULT_SCALE_PARAM;
+    const float noise = DEFAULT_NOISE_PARAM;
     bool trained = false;
 
 public:
@@ -92,7 +92,7 @@ public:
     bool isTrained(){return trained;}
     void reset();
 
-    virtual void train( FLOAT xt[],  FLOAT f[], int N[]) = 0;
+    virtual void train( float xt[],  float f[], int N[]) = 0;
     virtual void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) = 0;
 };
 
@@ -101,7 +101,7 @@ class ObsGP1D : public ObsGP{
     int nGroup;         // number of local GPs
     int nSamples;       // number of total input points.
 
-    std::vector<FLOAT> range;   // partitioned range for test
+    std::vector<float> range;   // partitioned range for test
 
     const obsGPparam param = {DEFAULT_SCALE_PARAM,
                               DEFAULT_NOISE_PARAM,
@@ -115,7 +115,7 @@ public:
     void reset();
 
     // NOTE: In 1D, it must be f > 0.
-    void train( FLOAT xt[],  FLOAT f[], int N[]) override;
+    void train( float xt[],  float f[], int N[]) override;
     void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
 
 };
@@ -133,12 +133,12 @@ class ObsGP2D : public ObsGP{
     std::vector<int>  Ind_j1;
 
     // pre-computed partition values
-    std::vector<FLOAT>  Val_i;
-    std::vector<FLOAT>  Val_j;
+    std::vector<float>  Val_i;
+    std::vector<float>  Val_j;
 
     void clearGPs();
-    void computePartition(FLOAT val[], int ni, int nj);
-    void trainValidPoints(FLOAT xt[], FLOAT f[]);
+    void computePartition(float val[], int ni, int nj);
+    void trainValidPoints(float xt[], float f[]);
 
     const obsGPparam param = {DEFAULT_SCALE_PARAM,
                               DEFAULT_NOISE_PARAM,
@@ -153,8 +153,8 @@ public:
 
     // NOTE: In 2D, the input xt must be a regular 2D array of size N[0] x N[1].
     //       If not f > 0, the point is considered invalid.
-    void train( FLOAT xt[],  FLOAT f[], int N[]) override;
-    void train( FLOAT xt[],  FLOAT f[], int N[], std::vector<int> &numSamples);
+    void train( float xt[],  float f[], int N[]) override;
+    void train( float xt[],  float f[], int N[], std::vector<int> &numSamples);
     void test(const EMatrixX& xt,EVectorX& val, EVectorX& var) override;
 
 private:

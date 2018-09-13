@@ -27,30 +27,30 @@
 using namespace Eigen;
 
 // inline functions for matern32_sparse_deriv1
-inline FLOAT kf(FLOAT r, FLOAT a){return (1.0+a*r)*exp(-a*r);}
-inline FLOAT kf1(FLOAT r, FLOAT dx,FLOAT a){return a*a*dx*exp(-a*r);}
-inline FLOAT kf2(FLOAT r, FLOAT dx1, FLOAT dx2, FLOAT delta, FLOAT a){
+inline float kf(float r, float a){return (1.0+a*r)*exp(-a*r);}
+inline float kf1(float r, float dx,float a){return a*a*dx*exp(-a*r);}
+inline float kf2(float r, float dx1, float dx2, float delta, float a){
     return a*a*(delta-a*dx1*dx2/r)*exp(-a*r);
 }
 
 // Dimension-specific implementations are required for covariances with derivatives.
 // 2D
-static EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                           FLOAT scale_param, EVectorX const& sigx, EVectorX const& siggrad);
-static EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                          EMatrixX const& x2, FLOAT scale_param);
+static EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1, std::vector<float> gradflag,
+                                           float scale_param, EVectorX const& sigx, EVectorX const& siggrad);
+static EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1, std::vector<float> gradflag,
+                                          EMatrixX const& x2, float scale_param);
 // 3D
-static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                           FLOAT scale_param, EVectorX const& sigx, EVectorX const& siggrad);
-static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                          EMatrixX const& x2, FLOAT scale_param);
+static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradflag,
+                                           float scale_param, EVectorX const& sigx, EVectorX const& siggrad);
+static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradflag,
+                                          EMatrixX const& x2, float scale_param);
 
 
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, FLOAT sigx)
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, float sigx)
 {
      int dim = x1.rows();
     int n = x1.cols();
-    FLOAT a = 1/scale_param;
+    float a = 1/scale_param;
     EMatrixX K = EMatrixX::Zero(n,n);
 
      for (int k=0;k<n;k++){
@@ -59,7 +59,7 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, FLOAT sigx)
                 K(k,k) = 1.0+sigx;
             }
             else{
-                FLOAT r = (x1.col(k)-x1.col(j)).norm();
+                float r = (x1.col(k)-x1.col(j)).norm();
                 K(k,j) = exp(-a*r);
                 K(j,k) = K(k,j);
             }
@@ -69,11 +69,11 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, FLOAT sigx)
     return K;
 }
 
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, EVectorX const& sigx)
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, EVectorX const& sigx)
 {
     int dim = x1.rows();
     int n = x1.cols();
-    FLOAT a = 1/scale_param;
+    float a = 1/scale_param;
     EMatrixX K = EMatrixX::Zero(n,n);
 
      for (int k=0;k<n;k++){
@@ -82,7 +82,7 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, EVectorX cons
                 K(k,k) = 1.0+sigx(k);
             }
             else{
-                FLOAT r = (x1.col(k)-x1.col(j)).norm();
+                float r = (x1.col(k)-x1.col(j)).norm();
                 K(k,j) = exp(-a*r);
                 K(j,k) = K(k,j);
             }
@@ -93,17 +93,17 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, FLOAT scale_param, EVectorX cons
 }
 
 
-EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, FLOAT scale_param)
+EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, float scale_param)
 {
     int dim = x1.rows();
     int n = x1.cols();
     int m = x2.cols();
-    FLOAT a = 1/scale_param;
+    float a = 1/scale_param;
     EMatrixX K = EMatrixX::Zero(n,m);
 
      for (int k=0;k<n;k++){
         for (int j=0;j<m;j++){
-            FLOAT r = (x1.col(k)-x2.col(j)).norm();
+            float r = (x1.col(k)-x2.col(j)).norm();
             K(k,j) = exp(-a*r);
         }
      }
@@ -111,8 +111,8 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, FLOAT scale_
     return K;
 }
 
-EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                           FLOAT scale_param, EVectorX const& sigx, EVectorX const& siggrad)
+EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
+                                           float scale_param, EVectorX const& sigx, EVectorX const& siggrad)
 {
     int dim = x1.rows();
 
@@ -126,8 +126,8 @@ EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
     return K;
 }
 
-EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                          EMatrixX const& x2, FLOAT scale_param)
+EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
+                                          EMatrixX const& x2, float scale_param)
 {
     int dim = x1.rows();
 
@@ -142,13 +142,13 @@ EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<FLOAT> gradflag,
 }
 
 // 3D
-EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                           FLOAT scale_param, EVectorX const& sigx, EVectorX const& siggrad)
+EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradflag,
+                                           float scale_param, EVectorX const& sigx, EVectorX const& siggrad)
 {
      int dim = x1.rows();
     int n = x1.cols();
-    FLOAT sqr3L = sqrt(3)/scale_param;
-    FLOAT sqr3L2 = sqr3L*sqr3L;
+    float sqr3L = sqrt(3)/scale_param;
+    float sqr3L2 = sqr3L*sqr3L;
     EMatrixX K;
 
     int ng = 0;
@@ -193,7 +193,7 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
                 }
             }
             else{
-                FLOAT r = (x1.col(k)-x1.col(j)).norm();
+                float r = (x1.col(k)-x1.col(j)).norm();
                 K(k,j) = kf(r,sqr3L);
                 K(j,k) = K(k,j);
                 if (gradflag[k] > -1){
@@ -259,13 +259,13 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
     return K;
 }
 
-EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradflag,
-                                          EMatrixX const& x2, FLOAT scale_param)
+EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradflag,
+                                          EMatrixX const& x2, float scale_param)
 {
     int dim = x1.rows();
     int n = x1.cols();
-    FLOAT sqr3L = sqrt(3)/scale_param;
-    FLOAT sqr3L2 = sqr3L*sqr3L;
+    float sqr3L = sqrt(3)/scale_param;
+    float sqr3L2 = sqr3L*sqr3L;
     EMatrixX K;
 
     int ng = 0;
@@ -291,7 +291,7 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
         int kind2 = kind1+ng;
         int kind3 = kind2+ng;
         for (int j=0;j<m;j++){
-            FLOAT r = (x1.col(k)-x2.col(j)).norm();
+            float r = (x1.col(k)-x2.col(j)).norm();
 
             K(k,j) = kf(r,sqr3L);
             K(k,j+m) = kf1(r,x1(0,k)-x2(0,j),sqr3L);
@@ -318,13 +318,13 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<FLOAT> gradfl
 }
 
 // 2D
-EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradflag, FLOAT scale_param,
+EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<float> gradflag, float scale_param,
                                 EVectorX const& sigx,EVectorX const& siggrad)
 {
     int dim = x1.rows();
     int n = x1.cols();
-    FLOAT sqr3L = sqrt(3)/scale_param;
-    FLOAT sqr3L2 = sqr3L*sqr3L;
+    float sqr3L = sqrt(3)/scale_param;
+    float sqr3L2 = sqr3L*sqr3L;
     EMatrixX K;
 
     int ng = 0;
@@ -361,7 +361,7 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
                 }
             }
             else{
-                FLOAT r = (x1.col(k)-x1.col(j)).norm();
+                float r = (x1.col(k)-x1.col(j)).norm();
                 K(k,j) = kf(r,sqr3L);
                 K(j,k) = K(k,j);
                 if (gradflag[k] > -1){
@@ -407,13 +407,13 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
     return K;
 }
 
-EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradflag,
-                                EMatrixX const& x2, FLOAT scale_param)
+EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<float> gradflag,
+                                EMatrixX const& x2, float scale_param)
 {
     int dim = x1.rows();
     int n = x1.cols();
-    FLOAT sqr3L = sqrt(3)/scale_param;
-    FLOAT sqr3L2 = sqr3L*sqr3L;
+    float sqr3L = sqrt(3)/scale_param;
+    float sqr3L2 = sqr3L*sqr3L;
     EMatrixX K;
 
     int ng = 0;
@@ -436,7 +436,7 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<FLOAT> gradfla
         int kind1=gradflag[k]+n;
         int kind2 = kind1+ng;
         for (int j=0;j<m;j++){
-            FLOAT r = (x1.col(k)-x2.col(j)).norm();
+            float r = (x1.col(k)-x2.col(j)).norm();
 
             K(k,j) = kf(r,sqr3L);
             K(k,j+m) = kf1(r,x1(0,k)-x2(0,j),sqr3L);
