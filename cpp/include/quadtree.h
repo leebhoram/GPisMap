@@ -217,9 +217,6 @@ public:
 
     void getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node> >& nodes);
 
-    void printNodes();
-    void printBoundary();
-
 };
 
 

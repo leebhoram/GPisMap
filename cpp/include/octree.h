@@ -264,9 +264,6 @@ public:
     void getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& nodes);
 
     void updateCount();
-    void printNodes();
-    void printBoundary();
-
 };
 
 

@@ -571,50 +571,6 @@ void QuadTree::SubdivideExcept(int childType)
     leaf = false;
 }
 
-void QuadTree::printBoundary()
-{
-    Point<float> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" ;
-}
-
-void QuadTree::printNodes()
-{
-    Point<float> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << ":" << boundary.getHalfLength() << ")" ;
-        if (gp != nullptr)
-            std::cout << " (GP)" << std::endl;
-    if (IsLeaf()){
-        std::cout << " This is a leaf node ... " ;
-        if (IsEmpty())
-            std::cout << "  EMPTY"  << std::endl;
-        else{
-            const Point<float> cn = node->getPos();
-            std::cout << "   Pos: " << cn.x << "," << cn.y << "  val:" << node->getVal();
-            std::cout << "  sig:" << node->getPosNoise()  << "  grad_sig:" << node->getGradNoise()  << std::endl;
-        }
-    }
-    else{
-        std::cout << std::endl;
-        if (northWest != 0){
-            std::cout << " |- NW ";
-            northWest->printNodes();
-        }
-        if (northEast != 0){
-            std::cout << " |- NE ";
-            northEast->printNodes();
-        }
-        if (southWest != 0){
-            std::cout << " |- SW ";
-            southWest->printNodes();
-        }
-        if (southEast != 0){
-            std::cout << " |- SE ";
-            southEast->printNodes();
-        }
-    }
-
-}
-
  // Find all points that appear within a range
 void QuadTree::QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes)
 {

@@ -775,65 +775,6 @@ void OcTree::SubdivideExcept(int childType)
     leaf = false;
 }
 
-void OcTree::printBoundary()
-{
-    Point3<float> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
-}
-
-void OcTree::printNodes()
-{
-    Point3<float> c = boundary.getCenter();
-    std::cout << "(" << c.x << "," << c.y << "," << c.z << ":" << boundary.getHalfLength() << ")" ;
-        if (gp != nullptr)
-            std::cout << " (GP)" << std::endl;
-    if (IsLeaf()){
-        std::cout << " This is a leaf node ... " ;
-        if (IsEmpty())
-            std::cout << "  EMPTY"  << std::endl;
-        else{
-            const Point3<float> cn = node->getPos();
-            std::cout << "   Pos: " << cn.x << "," << cn.y << "," << c.z << "  val:" << node->getVal() << "  sig:" << node->getPosNoise()  << std::endl;
-        }
-    }
-    else{
-        std::cout << std::endl;
-        if (northWestFront != 0){
-            std::cout << " |- NWF ";
-            northWestFront->printNodes();
-        }
-        if (northEastFront != 0){
-            std::cout << " |- NEF ";
-            northEastFront->printNodes();
-        }
-        if (southWestFront != 0){
-            std::cout << " |- SWF ";
-            southWestFront->printNodes();
-        }
-        if (southEastFront != 0){
-            std::cout << " |- SEF ";
-            southEastFront->printNodes();
-        }
-        if (northWestBack != 0){
-            std::cout << " |- NWB ";
-            northWestBack->printNodes();
-        }
-        if (northEastBack != 0){
-            std::cout << " |- NEB ";
-            northEastBack->printNodes();
-        }
-        if (southWestBack != 0){
-            std::cout << " |- SWB ";
-            southWestBack->printNodes();
-        }
-        if (southEastBack != 0){
-            std::cout << " |- SEB ";
-            southEastBack->printNodes();
-        }
-    }
-    return;
-}
-
  // Find all points that appear within a range
 void OcTree::QueryRange(AABB3 range, std::vector<std::shared_ptr<Node3> >& nodes)
 {
