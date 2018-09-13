@@ -50,6 +50,10 @@ cd mex
     run('../matlab/demo_gpisMap3.m')
     ```
 
+5. Trouble shooting
+    * If mex complains about not finding eigen, configure the eigen path appropriately
+        in both `make_GPisMap.m` and `make_GPisMap3.m`
+
 ## Video  
 [![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
 
@@ -58,7 +62,6 @@ cd mex
 
 The major contributors of this work include [Bhoram Lee](https://github.com/leebhoram),
 [Clark Zhang](https://github.com/chickensouple) and [HUANG Zonghao](https://github.com/huangzonghao).
-
 
 ## Misc.
 
