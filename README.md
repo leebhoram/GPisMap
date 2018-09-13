@@ -4,10 +4,6 @@ This repository contains source codes and demo files for our paper "Online Conti
 Mapping using Gaussian Process Implicit Surfaces (GPIS)", which is currently submitted to [IEEE ICRA 2019](https://www.icra2019.org/).
 
 The representation of the environment strongly affects how robots can move and interact with it. The paper presents an online approach for continuous mapping using Gaussian Process Implicit Surfaces (GPIS). Compared with grid-based methods, GPIS better utilizes sparse measurements to represent the world seamlessly. It provides direct access to the signed-distance function (SDF) and its derivatives which are invaluable for other robotic tasks and incorporates uncertainty in the sensor measurements. Our approach incrementally and efficiently updates GPIS by employing a regressor on observations and a spatial tree structure.
-
-<!-- ## Video Demo 
--[![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
--->
  
 ## License
 
@@ -53,6 +49,10 @@ cd mex
     ```
     run('../matlab/demo_gpisMap3.m')
     ```
+
+## Video  
+[![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
+
 
 ## Contributors
 
