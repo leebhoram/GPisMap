@@ -5,21 +5,11 @@ The major contributors of this work include [Bhoram Lee](https://github.com/leeb
 
 ## Introduction
 
-This repository contains the demo code of our online approach for continuous
-mapping using Gaussian Process Implicit Surfaces (GPIS) to represent spatial
-structures for robotic applications. 
+This repository contains source codes and demo files for our paper "Online Continuous
+Mapping using Gaussian Process Implicit Surfaces (GPIS)", which is currently submitted to [IEEE ICRA 2019](https://www.icra2019.org/) for review.
 
-Compared with grid-based methods, GPIS better utilizes sparse measurements to
-represent the world seamlessly. It provides direct access to the
-signed-distance function (SDF) and its derivatives which are invaluable for
-other robotic tasks and incorporates uncertainty in the sensor measurements.
-Our approach incrementally updates GPIS as an approximate SDF and its
-derivatives near surfaces from noisy measurements. Our implementation employs a
-regressor on observations and a spatial tree structure to maintain the GPIS
-structure efficiently. The characteristics and performance of the suggested
-approach are illustrated using simulations and real world 2D/3D data.
-
-  
+The representation of the environment strongly affects how robots can move and interact with it. We presents an online approach for continuous mapping using Gaussian Process Implicit Surfaces (GPIS). Compared with grid-based methods, GPIS better utilizes sparse measurements to represent the world seamlessly. It provides direct access to the signed-distance function (SDF) and its derivatives which are invaluable for other robotic tasks and incorporates uncertainty in the sensor measurements. Our approach incrementally and efficiently updates GPIS by employing a regressor on observations and a spatial tree structure.
+ 
 ## License
 
 Licensed under [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html).
