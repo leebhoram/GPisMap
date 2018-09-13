@@ -28,13 +28,8 @@
 
 #include "strct.h"
 
-#ifdef __USE_DOUBLE_PRECISION__     // This is in use
-typedef Eigen::MatrixXd EMatrixX;
-typedef Eigen::VectorXd EVectorX;
-#else                               // For potential transition to float
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
-#endif
 
 //////////////////////////////////////////
 // Convariance matrix computation using the Ornstein-Uhlenbeck cov function.

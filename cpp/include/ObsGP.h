@@ -42,15 +42,9 @@
 #define DEFAULT_OVERLAP_SZ2  3
 #define DEFAULT_GROUP_SZ2    5
 
-#ifdef __USE_DOUBLE_PRECISION__     // This is in use
-typedef Eigen::MatrixXd EMatrixX;
-typedef Eigen::VectorXd EVectorX;
-typedef Eigen::RowVectorXd ERowVectorX;
-#else                               // For potential transition to float
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
 typedef Eigen::RowVectorXf ERowVectorX;
-#endif
 
 // This class builds a GP regressor using the Ornstein-Uuhlenbeck covariance function.
 // NOTE: See covFnc.h)
