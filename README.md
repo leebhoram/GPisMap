@@ -1,22 +1,18 @@
-# GPisMap -- Gaussian Process Implicit Surface Map
-
-The major contributors of this work include [Bhoram Lee](https://github.com/leebhoram),
-[Clark Zhang](https://github.com/chickensouple) and [HUANG Zonghao](https://github.com/huangzonghao).
-
-## Introduction
+# GPisMap 
 
 This repository contains source codes and demo files for our paper "Online Continuous
-Mapping using Gaussian Process Implicit Surfaces (GPIS)", which is currently submitted to [IEEE ICRA 2019](https://www.icra2019.org/) for review.
+Mapping using Gaussian Process Implicit Surfaces (GPIS)", which is currently submitted to [IEEE ICRA 2019](https://www.icra2019.org/).
 
-The representation of the environment strongly affects how robots can move and interact with it. We presents an online approach for continuous mapping using Gaussian Process Implicit Surfaces (GPIS). Compared with grid-based methods, GPIS better utilizes sparse measurements to represent the world seamlessly. It provides direct access to the signed-distance function (SDF) and its derivatives which are invaluable for other robotic tasks and incorporates uncertainty in the sensor measurements. Our approach incrementally and efficiently updates GPIS by employing a regressor on observations and a spatial tree structure.
+The representation of the environment strongly affects how robots can move and interact with it. The paper presents an online approach for continuous mapping using Gaussian Process Implicit Surfaces (GPIS). Compared with grid-based methods, GPIS better utilizes sparse measurements to represent the world seamlessly. It provides direct access to the signed-distance function (SDF) and its derivatives which are invaluable for other robotic tasks and incorporates uncertainty in the sensor measurements. Our approach incrementally and efficiently updates GPIS by employing a regressor on observations and a spatial tree structure.
+
+<!-- ## Video Demo 
+-[![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
+-->
  
 ## License
 
 Licensed under [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html).
 
-## Video Demo
-
-[![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
 
 ## Requirements: Software
 
@@ -58,16 +54,17 @@ cd mex
     run('../matlab/demo_gpisMap3.m')
     ```
 
+## Contributors
+
+The major contributors of this work include [Bhoram Lee](https://github.com/leebhoram),
+[Clark Zhang](https://github.com/chickensouple) and [HUANG Zonghao](https://github.com/huangzonghao).
+
+
 ## Misc.
 
 Code has been tested under:
 
 - Ubuntu 16.04 with Intel Core i7-4900MQ @ 2.90GHz
-
-## Note
-
-This work has been submitted to [ICRA 2019](https://www.icra2019.org/) for
-review.
 
 <!-- ## Citation
    - 
