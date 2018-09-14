@@ -241,7 +241,6 @@ bool OcTree::Insert(std::shared_ptr<Node3> n){
             if (node == nullptr)
             // If this is the first point in this quad tree, add the object here
             {
-               // std::cout << "the first point inserted" << std::endl;
                 node = n;
                 numNodes = 1;
                 return true;
@@ -300,7 +299,6 @@ bool OcTree::Insert(std::shared_ptr<Node3> n, std::unordered_set<OcTree*>& quads
             if (rootLimitReached)  return false;
             else                   return InsertToParent(n);
         }
-        //else  std::cout << "object cannot be added" << std::endl;
         return false; // object cannot be added
     }
 
