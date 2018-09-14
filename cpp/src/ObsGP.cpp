@@ -335,7 +335,6 @@ void ObsGP2D::trainValidPoints(float xt[], float f[])
 void ObsGP2D::train( float xt[], float f[], int N[])
 {
     if ((N[0] > 0) && (N[1] > 0) && (xt !=0)){
-        //std::cout << N[0] << "x" << N[1] << std::endl;
 
         if ((szSamples[0] != N[0]) || (szSamples[1] != N[1]) || repartition){
             computePartition(xt,N[0],N[1]);
