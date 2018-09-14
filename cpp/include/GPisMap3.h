@@ -93,8 +93,7 @@ protected:
     OcTree* t;
     std::unordered_set<OcTree*> activeSet;
     const int mapDimension = 3;
-    float runtime[4];
-
+ 
     void init();
     bool preprocData( float * dataz, int N, std::vector<float> & pose);
     bool regressObs();
@@ -125,14 +124,6 @@ public:
     void update( float * dataz, int N, std::vector<float> & pose);
     bool test( float* x, int dim, int leng, float * res);
     void resetCam(camParam c);
-
-    void getAllPoints(std::vector<float> & pos);
-    void getAllPoints(std::vector<float> & pos, std::vector<float> &var, std::vector<float> &grad,  std::vector<float> &grad_var);
-
-    double getRuntime0(){return runtime[0];}
-    double getRuntime1(){return runtime[1];}
-    double getRuntime2(){return runtime[2];}
-    double getRuntime3(){return runtime[3];}
 
 private:
     void test_kernel(int thread_idx,

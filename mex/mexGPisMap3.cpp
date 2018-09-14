@@ -27,9 +27,6 @@
 
 static GPisMap3* gpm = 0;
 
-static double test_time = 0.0;
-static std::chrono::high_resolution_clock::time_point t1;
-static std::chrono::high_resolution_clock::time_point t2;
 static const double bigbirdCams_fx[5] = {570.9361, 572.3318, 568.9403 , 567.9881, 572.7638};
 static const double bigbirdCams_fy[5] = {570.9376, 572.3316, 568.9419 , 567.9995, 572.7567};
 static const double bigbirdCams_cx[5] = {306.8789, 309.9968, 308.4583, 310.5243, 310.4192};
@@ -70,22 +67,9 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
 
             std::vector<float> pose(ppose, ppose + mxGetNumberOfElements(prhs[2]) );
 
-            if (nlhs > 0){
-                plhs[0] = mxCreateDoubleMatrix(1,1,mxREAL);
-            }
-
             int numel =  mxGetNumberOfElements(prhs[1]);
-            t1 = std::chrono::high_resolution_clock::now();
             gpm->update(pz, numel, pose);
-            t2= std::chrono::high_resolution_clock::now();
 
-            // test time
-            if (nlhs > 0){
-                std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-                test_time = time_collapsed.count();
-                double *ptime   = (double*)mxGetPr(plhs[0]);
-                ptime[0] = test_time;
-            }
 
         }
         else
@@ -115,43 +99,15 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
                 plhs[0] = mxCreateNumericMatrix(2*(1+dim),N,mxSINGLE_CLASS, mxREAL);
             }
 
-            if (nlhs == 2){
-                plhs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
-                // test time
-                t1 = std::chrono::high_resolution_clock::now();
-            }
-
             float *pRes   = (float*)mxGetPr(plhs[0]);
             gpm->test(px, dim, N, pRes);
-
-            // test time
-            if (nlhs == 2){
-                t2= std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-                test_time = time_collapsed.count();
-                double *ptime   = (double*)mxGetPr(plhs[1]);
-                ptime[0] = test_time;
-            }
 
         }
         else if (gpm ==0){
             std::cout << "Error: the map is not initialized." << std::endl;
         }
 
-    }
-    else if (commstr.compare("getAllPoints")==0){
-        if (gpm != 0){
-            std::vector<float> pos;
-            gpm->getAllPoints(pos);
-
-            int N = pos.size()/3; // 2D
-            if (N > 0){
-                plhs[0] = mxCreateNumericMatrix(3,N,mxSINGLE_CLASS, mxREAL);
-                float *pRes   = (float*)mxGetPr(plhs[0]);
-                memcpy(pRes,pos.data(),sizeof(float)*3*N);
-            }
-        }
-    }
+    }   
     else if (commstr.compare("setCamera")==0) {
 
         double *camID = (double *)mxGetData(prhs[1]);
@@ -185,21 +141,7 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
             }
         }
         return;
-    }
-    else if (commstr.compare("getRuntimes")==0) {
-        if (gpm != 0){
-            plhs[0] = mxCreateDoubleMatrix(1,4,mxREAL);
-            double *ptime = (double*)mxGetPr(plhs[0]);
-            ptime[0] = gpm->getRuntime0();
-            ptime[1] = gpm->getRuntime1();
-            ptime[2] = gpm->getRuntime2();
-            ptime[3] = gpm->getRuntime3();
-        }
-        else if (gpm ==0){
-            std::cout << "Error: the map is not initialized." << std::endl;
-        }
-        return;
-    }
+    }   
     else if (commstr.compare("reset")==0) {
         if (gpm != 0){
             gpm->reset();

@@ -22,7 +22,6 @@ clearvars
 
 addpath('./plot_scripts');
 addpath('../mex');
-%addpath(genpath('..'));
 mexGPisMap3('reset')
 
 % The original dataset downloadable at http://rll.berkeley.edu/bigbird/

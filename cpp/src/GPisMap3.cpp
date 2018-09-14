@@ -30,9 +30,6 @@ tree_param OcTree::param = tree_param((float) GPISMAP3_TREE_MIN_HALF_LENGTH,
                                       (float) GPISMAP3_TREE_INIT_ROOT_HALF_LENGTH,
                                       C_leng);
 
-static std::chrono::high_resolution_clock::time_point t1;
-static std::chrono::high_resolution_clock::time_point t2;
-
 static inline bool isRangeValid(float r)
 {
     return (r < GPISMAP3_MAX_RANGE) &&  (r > GPISMAP3_MIN_RANGE);
@@ -242,7 +239,6 @@ void GPisMap3::update(float * dataz, int N, std::vector<float> & pose)
 
 bool GPisMap3::regressObs(){
 
-    t1= std::chrono::high_resolution_clock::now();
     int dim[2];
     if (gpo == 0){
         gpo = new ObsGP2D();
@@ -257,15 +253,12 @@ bool GPisMap3::regressObs(){
 
     gpo->reset();
     gpo->train(vu_grid.data(), obs_zinv.data(), dim);
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[0] = time_collapsed.count();
-
+  
     return gpo->isTrained();
 }
 
 void GPisMap3::updateMapPoints(){
-    t1= std::chrono::high_resolution_clock::now();
+   
     if (t!=0 && gpo !=0){
         AABB3 searchbb(pose_tr[0],pose_tr[1],pose_tr[2],range_obs_max);
         std::vector<OcTree*> oc;
@@ -324,9 +317,6 @@ void GPisMap3::updateMapPoints(){
 
     }
 
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[1] = time_collapsed.count();
     return;
 }
 
@@ -595,8 +585,7 @@ void GPisMap3::addNewMeas(){
 }
 
 void GPisMap3::evalPoints(){
-
-    t1= std::chrono::high_resolution_clock::now();
+  
      if (t == 0 || obs_numdata < 1)
          return;
 
@@ -669,7 +658,6 @@ void GPisMap3::evalPoints(){
         }
 
         if (var(0) > setting.obs_var_thre){
-            //std::cout << "Removing...." << var(0) << std::endl;
             t->Remove(p);
             continue;
         }
@@ -713,10 +701,7 @@ void GPisMap3::evalPoints(){
         }
 
     }
-
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[2] = time_collapsed.count();
+ 
     return;
 }
 
@@ -743,8 +728,7 @@ void GPisMap3::updateGPs_kernel(int thread_idx,
 }
 
 void GPisMap3::updateGPs(){
-    t1= std::chrono::high_resolution_clock::now();
-
+    
     std::unordered_set<OcTree*> updateSet(activeSet);
 
     int num_threads = std::thread::hardware_concurrency();
@@ -810,9 +794,7 @@ void GPisMap3::updateGPs(){
     delete [] threads;
     // clear active set once all the jobs for update are done.
     activeSet.clear();
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[3] = time_collapsed.count();
+
     return;
 }
 
@@ -973,26 +955,4 @@ bool GPisMap3::test(float * x, int dim, int leng, float * res){
     return true;
 }
 
-void GPisMap3::getAllPoints(std::vector<float> & pos)
-{
-    pos.clear();
-
-    if (t==0)
-        return;
-
-    std::vector<std::shared_ptr<Node3> > nodes;
-    t->getAllChildrenNonEmptyNodes(nodes);
-
-    int N = nodes.size();
-    if (N> 0){
-        pos.resize(3*N);
-        for (int j=0; j<N; j++) {
-            int j3 = 3*j;
-            pos[j3] = nodes[j]->getPosX();
-            pos[j3+1] = nodes[j]->getPosY();
-            pos[j3+2] = nodes[j]->getPosZ();
-        }
-    }
-    return;
-}
 
