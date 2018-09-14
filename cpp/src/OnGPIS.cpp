@@ -148,7 +148,7 @@ void OnGPIS::train(const vecNode3& samples){
     return;
 }
 
-// TO-DO : 3D!!!!!
+
 void OnGPIS::test(const EMatrixX& xt,EVectorX& val, EMatrixX& gradval, EVectorX& var){
 
     if (!isTrained()){
