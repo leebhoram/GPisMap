@@ -73,7 +73,6 @@ class Node
     float val;
     float pose_sig;
     float grad_sig;
-    //int level;
     NODE_TYPE nt;
 
 public:
@@ -105,7 +104,6 @@ class Node3
     float val;
     float pose_sig;
     float grad_sig;
-    //int level;
     NODE_TYPE nt;
 
 public:
@@ -167,11 +165,9 @@ typedef struct onGPISparam_{
     // which has a form of k(r)=(1+sqrt(3)*r/l)exp(-sqrt(3)*r/l) (See covFnc.h)
     float scale;            // the scale parameter l
     float noise;            // the default noise parameter of the measurement
-                            // currently use heteroscedastic noise acoording to a noise model
-    // TO-DO: add actually parameters (weight, threshold, etc. if any) of the noise model
+                            // currently use heteroscedastic noise acoording to a noise model   
     float noise_deriv;      // the default noise parameter of the derivative measurement
                             // currently use a noise model by numerical computation.
-    // TO-DO: add actually parameters (weight, threshold, etc. if any) of the noise model
     onGPISparam_(){}
     onGPISparam_(float s, float n, float nd): scale(s), noise(n), noise_deriv(nd){}
 } onGPISparam;
