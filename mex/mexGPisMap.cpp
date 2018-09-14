@@ -37,33 +37,7 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
     mxGetString(prhs[0],command,128);
     std::string commstr(command);
 
-    if (commstr.compare("init")==0) {
-
-        if (gpm != 0){
-            delete gpm;
-            gpm = 0;
-        }
-
-        if (nrhs < 2){
-            gpm = new GPisMap();
-        }
-        else{
-            size_t numel = mxGetNumberOfElements(prhs[1]);
-
-            if (numel == 8){
-                if (mxSINGLE_CLASS != mxGetClassID(prhs[1]) ){
-                    std::cout << "The input data must be float (single) type.  @ train()" << std::endl;
-                    return;
-                }
-
-                GPisMapParam p;
-                // TO_DO: take struct as inpur and set the params;
-                gpm = new GPisMap(p);
-            }
-        }
-        return;
-    }
-    else if (commstr.compare("update")==0) {
+  if (commstr.compare("update")==0) {
 
         if (gpm == 0){
             gpm = new GPisMap();
@@ -145,58 +119,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
         else if (gpm ==0){
             std::cout << "Error: the map is not initialized." << std::endl;
         }
-    }
-    else if (commstr.compare("getAllPoints")==0){
-        if (gpm != 0){
-            std::vector<float> pos;
-            gpm->getAllPoints(pos);
-
-            int N = pos.size()/2; // 2D
-            if (N > 0){
-                plhs[0] = mxCreateNumericMatrix(2,N,mxSINGLE_CLASS, mxREAL);
-                float *pRes   = (float*)mxGetPr(plhs[0]);
-                memcpy(pRes,pos.data(),sizeof(float)*2*N);
-            }
-        }
-    }
-    else if (commstr.compare("getAllPoints2")==0){
-        if (gpm != 0){
-            std::vector<float> pos;
-            std::vector<float> var;
-            std::vector<float> grad;
-            std::vector<float> grad_var;
-            gpm->getAllPoints(pos,var,grad,grad_var);
-
-            int N = pos.size()/2; // 2D
-            if (N > 0){
-                plhs[0] = mxCreateNumericMatrix(2,N,mxSINGLE_CLASS, mxREAL);
-                plhs[1] = mxCreateNumericMatrix(1,N,mxSINGLE_CLASS, mxREAL);
-                plhs[2] = mxCreateNumericMatrix(2,N,mxSINGLE_CLASS, mxREAL);
-                plhs[3] = mxCreateNumericMatrix(1,N,mxSINGLE_CLASS, mxREAL);
-                float *ppos = (float*)mxGetPr(plhs[0]);
-                float *pvar = (float*)mxGetPr(plhs[1]);
-                float *pgrad = (float*)mxGetPr(plhs[2]);
-                float *pgradvar = (float*)mxGetPr(plhs[3]);
-                memcpy(ppos,pos.data(),sizeof(float)*2*N);
-                memcpy(pvar,var.data(),sizeof(float)*N);
-                memcpy(pgrad,grad.data(),sizeof(float)*2*N);
-                memcpy(pgradvar,grad_var.data(),sizeof(float)*N);
-            }
-        }
-    }
-    else if (commstr.compare("getRuntimes")==0) {
-        if (gpm != 0){
-            plhs[0] = mxCreateDoubleMatrix(1,4,mxREAL);
-            double *ptime = (double*)mxGetPr(plhs[0]);
-            ptime[0] = gpm->getRuntime0();
-            ptime[1] = gpm->getRuntime1();
-            ptime[2] = gpm->getRuntime2();
-            ptime[3] = gpm->getRuntime3();
-        }
-        else if (gpm ==0){
-            std::cout << "Error: the map is not initialized." << std::endl;
-        }
-        return;
     }
     else if (commstr.compare("reset")==0) {
         if (gpm != 0){

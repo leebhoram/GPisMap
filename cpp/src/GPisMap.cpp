@@ -28,8 +28,6 @@ tree_param QuadTree::param = tree_param(GPISMAP_TREE_MIN_HALF_LENGTH,
                                         GPISMAP_TREE_INIT_ROOT_HALF_LENGTH,
                                         GPISMAP_TREE_CLUSTER_HALF_LENGTH);
 
-static std::chrono::high_resolution_clock::time_point t1;
-static std::chrono::high_resolution_clock::time_point t2;
 
 #define MAX_RANGE 3e1
 #define MIN_RANGE 2e-1
@@ -61,7 +59,6 @@ static void cart2polar(float x, float y, float& a, float &r)
     r = sqrt(x*x + y*y);
     return;
 }
-// #endif
 
 GPisMap::GPisMap():t(0),
                    gpo(0),
@@ -173,7 +170,6 @@ void GPisMap::update( float * datax,  float * dataf, int N, std::vector<float> &
 }
 
 bool GPisMap::regressObs( ){
-    t1= std::chrono::high_resolution_clock::now();
     int N[2];
     if (gpo == 0){
         gpo = new ObsGP1D();
@@ -182,14 +178,10 @@ bool GPisMap::regressObs( ){
     N[0] = obs_numdata;
     gpo->reset();
     gpo->train( obs_theta.data(),obs_f.data(), N);
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[0] = time_collapsed.count();
     return gpo->isTrained();
 }
 
 void GPisMap::updateMapPoints(){
-    t1= std::chrono::high_resolution_clock::now();
     if (t!=0 && gpo !=0){
 
         AABB searchbb(pose_tr[0],pose_tr[1],range_obs_max);
@@ -240,9 +232,6 @@ void GPisMap::updateMapPoints(){
             }
         }
     }
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[1] = time_collapsed.count();
     return;
 }
 
@@ -318,12 +307,12 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
                 float oc_new = occ_test(1.0/std::sqrt(r_new), rinv0(0), r_new*30.0);
                 float abs_oc_new = fabs(oc_new);
 
-                if (abs_oc_new < 0.02 || oc < -0.1) // TO-DO : set it as a parameter
+                if (abs_oc_new < 0.02 || oc < -0.1) 
                     break;
                 else if (oc*oc_new < 0.0)
-                    dx = 0.5*dx; // TO-DO : set it as a parameter
+                    dx = 0.5*dx; 
                 else
-                    dx = 1.1*dx; // TO-DO : set it as a parameter
+                    dx = 1.1*dx; 
 
                 abs_oc = abs_oc_new;
                 oc = oc_new;
@@ -387,7 +376,6 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
         else{
             noise = setting.min_position_noise*noise;
         }
-
 
         float dist = std::sqrt(x_new[0]*x_new[0]+x_new[1]*x_new[1]);
         float view_ang = std::max(-(x_new[0]*grad_new_loc.x+x_new[1]*grad_new_loc.y)/dist, (float)1e-1);
@@ -486,7 +474,6 @@ void GPisMap::addNewMeas(){
 
 void GPisMap::evalPoints(){
 
-    t1= std::chrono::high_resolution_clock::now();
      if (t == 0 || obs_numdata < 1)
          return;
 
@@ -592,9 +579,6 @@ void GPisMap::evalPoints(){
         }
     }
 
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[2] = time_collapsed.count();
     return;
 }
 
@@ -607,7 +591,7 @@ void GPisMap::updateGPs_kernel(int thread_idx,
         if (nodes_to_update[i] != 0){
             Point<float> ct = (nodes_to_update[i])->getCenter();
             float l = (nodes_to_update[i])->getHalfLength();
-            AABB searchbb(ct.x,ct.y,l*2.0);
+            AABB searchbb(ct.x,ct.y,l*4.0);
             res.clear();
             t->QueryRange(searchbb,res);
             if (res.size()>0){
@@ -621,8 +605,6 @@ void GPisMap::updateGPs_kernel(int thread_idx,
 }
 
 void GPisMap::updateGPs(){
-    t1= std::chrono::high_resolution_clock::now();
-
     std::unordered_set<QuadTree*> updateSet(activeSet);
 
     int num_threads = std::thread::hardware_concurrency();
@@ -634,7 +616,7 @@ void GPisMap::updateGPs(){
 
         Point<float> ct = (*it)->getCenter();
         float l = (*it)->getHalfLength();
-        AABB searchbb(ct.x,ct.y,2.0*l);
+        AABB searchbb(ct.x,ct.y,4.0*l);
         std::vector<QuadTree*> qs;
         t->QueryNonEmptyLevelC(searchbb,qs);
         if (qs.size()>0){
@@ -688,9 +670,6 @@ void GPisMap::updateGPs(){
     delete [] threads;
     // clear active set once all the jobs for update are done.
     activeSet.clear();
-    t2= std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_collapsed = std::chrono::duration_cast<std::chrono::duration<double>>(t2-t1); // reset
-    runtime[3] = time_collapsed.count();
     return;
 }
 
@@ -839,57 +818,4 @@ bool GPisMap::test(float * x, int dim, int leng, float * res){
     delete [] threads;
 
     return true;
-}
-
-void GPisMap::getAllPoints(std::vector<float> & pos)
-{
-    pos.clear();
-
-    if (t==0)
-        return;
-
-    std::vector<std::shared_ptr<Node> > nodes;
-    t->getAllChildrenNonEmptyNodes(nodes);
-
-    int N = nodes.size();
-    if (N> 0){
-        pos.resize(mapDimension*N);
-        for (int j=0; j<N; j++) {
-            int j2 = 2*j;
-            pos[j2] = nodes[j]->getPosX();
-            pos[j2+1] = nodes[j]->getPosY();
-        }
-    }
-    return;
-}
-
-void GPisMap::getAllPoints(std::vector<float> & pos, std::vector<float> &var, std::vector<float> &grad,  std::vector<float> &grad_var)
-{
-    pos.clear();
-    var.clear();
-    grad.clear();
-    grad_var.clear();
-
-    if (t==0)
-        return;
-    std::vector<std::shared_ptr<Node> > nodes;
-    t->getAllChildrenNonEmptyNodes(nodes);
-
-    int N = nodes.size();
-    if (N> 0){
-        pos.resize(mapDimension*N);
-        var.resize(N);
-        grad.resize(mapDimension*N);
-        grad_var.resize(N);
-        for (int j=0; j<N; j++) {
-            int j2 = 2*j;
-            pos[j2] = nodes[j]->getPosX();
-            pos[j2+1] = nodes[j]->getPosY();
-            var[j] = nodes[j]->getPosNoise();
-            grad[j2] = nodes[j]->getGradX();
-            grad[j2+1] = nodes[j]->getGradY();
-            grad_var[j] = nodes[j]->getGradNoise();
-        }
-    }
-    return;
 }

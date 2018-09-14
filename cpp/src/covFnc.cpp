@@ -329,7 +329,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<float> gradfla
 
     int ng = 0;
     for (auto it = gradflag.begin();it!=gradflag.end();it++){
-       // std::cout << (*it) << std::endl;
         if ((*it) > 0.5){
             (*it) = ng;
             ng++;

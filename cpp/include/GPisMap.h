@@ -24,7 +24,6 @@
 #include "ObsGP.h"
 #include "OnGPIS.h"
 #include "quadtree.h"
-#include <chrono>
 #include "params.h"
 
 typedef struct GPisMapParam_{
@@ -95,7 +94,6 @@ protected:
     int obs_numdata;
     float range_obs_max;
 
-    double runtime[4];
 
 public:
     GPisMap();
@@ -107,13 +105,6 @@ public:
     bool test( float* x, int dim, int leng, float * res);
 
     int getMapDimension(){return mapDimension;}
-    void getAllPoints(std::vector<float> & pos);
-    void getAllPoints(std::vector<float> & pos, std::vector<float> &var, std::vector<float> &grad,  std::vector<float> &grad_var);
-
-    double getRuntime0(){return runtime[0];}
-    double getRuntime1(){return runtime[1];}
-    double getRuntime2(){return runtime[2];}
-    double getRuntime3(){return runtime[3];}
 
 private:
     void test_kernel(int thread_idx,
