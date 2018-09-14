@@ -148,7 +148,6 @@ void OnGPIS::train(const vecNode3& samples){
     return;
 }
 
-
 void OnGPIS::test(const EMatrixX& xt,EVectorX& val, EMatrixX& gradval, EVectorX& var){
 
     if (!isTrained()){
@@ -183,7 +182,6 @@ void OnGPIS::testSinglePoint(const EVectorX& xt, float& val, float grad[],float 
         return;
 
     EMatrixX K = matern32_sparse_deriv1(x, gradflag, xt, param.scale);
-
 
     EVectorX res = K.transpose()*alpha;
     val = res(0);

@@ -109,5 +109,4 @@
 #define DEFAULT_OBSGP_OVERLAP_SZ2  3
 #define DEFAULT_OBSGP_GROUP_SZ2    5
 
-
 #endif   /* ----- #ifndef PARAMS_H_  ----- */

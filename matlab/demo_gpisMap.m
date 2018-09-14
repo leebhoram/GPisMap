@@ -63,4 +63,3 @@ end
 
 % delete all resources
 mexGPisMap('reset');
-

@@ -137,4 +137,5 @@ private:
                           int end_idx,
                           OcTree **nodes_to_update);
 };
+
 #endif

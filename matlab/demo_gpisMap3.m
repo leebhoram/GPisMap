@@ -66,4 +66,3 @@ end
 
 % clear resources
 mexGPisMap3('reset')
-

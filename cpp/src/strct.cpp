@@ -54,7 +54,6 @@ void Node::updateData(float _val, float _pose_sig, Point<float> _grad, float _gr
     nt = n;
 }
 
-
 void Node::updateNoise( float _pose_sig, float _grad_sig){
     pose_sig = _pose_sig;
     grad_sig = _grad_sig;

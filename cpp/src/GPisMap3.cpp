@@ -77,7 +77,6 @@ GPisMap3::GPisMap3(GPisMap3Param par):t(0),
     init();
 }
 
-
 GPisMap3::GPisMap3(GPisMap3Param par, camParam c):t(0),
                                                   gpo(0),
                                                   obs_numdata(0),
@@ -244,7 +243,6 @@ bool GPisMap3::regressObs(){
         gpo = new ObsGP2D();
     }
 
-
     if (2*obs_zinv.size() != vu_grid.size())
         return false;
 
@@ -354,7 +352,6 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         if (var(0) > setting.obs_var_thre)
             continue;
 
-
         float oc = occ_test(rinv, rinv0(0), z_loc*30.0);
 
         // If unobservable, continue
@@ -443,7 +440,6 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             r0_mean += w*r0;
         }
 
-
         if (var(0) > setting.obs_var_thre)// invalid
             continue;
 
@@ -474,7 +470,6 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
             noise = setting.min_position_noise*noise;
         }
 
-
         float dist = std::sqrt(x_new[0]*x_new[0]+x_new[1]*x_new[1]+x_new[2]*x_new[2]);
         float view_ang = std::max(-(x_new[0]*grad_new_loc.x+x_new[1]*grad_new_loc.y+x_new[2]*grad_new_loc.z)/dist, (float)1e-1);
         float view_ang2 = view_ang*view_ang;
@@ -483,7 +478,6 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         float temp = noise;
         noise += view_noise + abs_oc;
         grad_noise = grad_noise + 0.1*view_noise;
-
 
         // local to global coord.
         Point3<float> pos_new;
@@ -499,7 +493,6 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
 
         float pos_noise_sum = (noise_old + noise);
         float grad_noise_sum = (grad_noise_old + grad_noise);
-
 
          // Now, update
         if (grad_noise_old > 0.5 || grad_noise_old > 0.6){
@@ -626,7 +619,6 @@ void GPisMap3::evalPoints(){
             }
         }
 
-
         if ((succeeded == 0) || !(vecInserted.size() > 0)) // if failed, then continue to test the next point
             continue;
 
@@ -642,7 +634,6 @@ void GPisMap3::evalPoints(){
             Xperturb[i] = obs_valid_xyzlocal[k3] + setting.delx*Xperturb[i];
             Yperturb[i] = obs_valid_xyzlocal[k3+1] + setting.delx*Yperturb[i];
             Zperturb[i] = obs_valid_xyzlocal[k3+2] + setting.delx*Zperturb[i];
-
 
             vu(0,0) = Yperturb[i]/Zperturb[i];
             vu(1,0) = Xperturb[i]/Zperturb[i];
@@ -661,7 +652,6 @@ void GPisMap3::evalPoints(){
             t->Remove(p);
             continue;
         }
-
 
         float noise = 100.0;
         float grad_noise = 1.00;
@@ -954,5 +944,3 @@ bool GPisMap3::test(float * x, int dim, int leng, float * res){
 
     return true;
 }
-
-

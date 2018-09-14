@@ -45,7 +45,6 @@ static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float>
 static EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradflag,
                                           EMatrixX const& x2, float scale_param);
 
-
 EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, float sigx)
 {
      int dim = x1.rows();
@@ -91,7 +90,6 @@ EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, float scale_param, EVectorX cons
 
     return K;
 }
-
 
 EMatrixX ornstein_uhlenbeck(EMatrixX const& x1, EMatrixX const& x2, float scale_param)
 {
@@ -204,7 +202,6 @@ EMatrixX matern32_sparse_deriv1_3D(EMatrixX const& x1, std::vector<float> gradfl
                     K(j,kind2) = K(kind2,j);
                     K(kind3,j) = -kf1(r,x1(2,k)-x1(2,j),sqr3L);
                     K(j,kind3) = K(kind3,j);
-
 
                     if (gradflag[j] > -1){
 
@@ -401,7 +398,6 @@ EMatrixX matern32_sparse_deriv1_2D(EMatrixX const& x1,std::vector<float> gradfla
             }
         }
     }
-
 
     return K;
 }

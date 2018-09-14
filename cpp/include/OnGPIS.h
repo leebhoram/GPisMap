@@ -29,7 +29,6 @@
 #include "strct.h"
 #include "params.h"
 
-
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
 typedef Eigen::RowVectorXf ERowVectorX;
@@ -72,4 +71,5 @@ public:
     void test2Dpoint(const EVectorX& xt, float& val, float& gradx, float& grady, float& varval ,float& vargradx, float& vargrady);
     void test2Dpoint(float x, float y, float& val, float& gradx, float& grady, float& varval ,float& vargradx, float& vargrady);
 };
+
 #endif

@@ -81,7 +81,6 @@ public:
     Node(Point<float> _pos, NODE_TYPE _nt = NODE_TYPE::NONE);
     Node();
 
-
     void updateData(float _val, float _pose_sig, Point<float> _grad, float _grad_sig, NODE_TYPE n);
     void updateNoise( float _pose_sig, float _grad_sig);
 
@@ -171,7 +170,6 @@ typedef struct onGPISparam_{
     onGPISparam_(){}
     onGPISparam_(float s, float n, float nd): scale(s), noise(n), noise_deriv(nd){}
 } onGPISparam;
-
 
 // QuadTree (2D) and OcTree (3D)
 typedef struct tree_param_{

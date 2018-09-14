@@ -31,7 +31,6 @@
 typedef Eigen::MatrixXf EMatrixX;
 typedef Eigen::VectorXf EVectorX;
 
-
 //////////////////////////////////////////
 // Convariance matrix computation using the Ornstein-Uhlenbeck cov function.
 // Note:
@@ -47,7 +46,6 @@ EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
 // covariances for x1 (input points) and x2 (test points)
 EMatrixX matern32_sparse_deriv1(EMatrixX const& x1, std::vector<float> gradflag,
                                           EMatrixX const& x2, float scale_param);
-
 
 //////////////////////////////////////////
 // Convariance matrix computation using the Ornstein-Uhlenbeck cov function.

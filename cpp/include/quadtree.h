@@ -218,6 +218,4 @@ public:
 
 };
 
-
 #endif
-

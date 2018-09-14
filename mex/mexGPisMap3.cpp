@@ -70,7 +70,6 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
             int numel =  mxGetNumberOfElements(prhs[1]);
             gpm->update(pz, numel, pose);
 
-
         }
         else
             std::cout << "Error: Check the input dimension." << std::endl;

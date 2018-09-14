@@ -242,7 +242,6 @@ public:
     void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads, std::vector<float>& sqdst);
     void QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& quads, std::vector<std::vector<std::shared_ptr<Node3> > >& nodes);
 
-
     int32_t getNodeCount(){return numNodes;}
     Point3<float> getCenter(){return boundary.getCenter();}
     float getHalfLength(){return boundary.getHalfLength();}
@@ -265,7 +264,4 @@ public:
     void updateCount();
 };
 
-
-
 #endif
-

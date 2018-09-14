@@ -23,7 +23,6 @@
 #include <Eigen/Cholesky>
 #include <thread>
 
-
 using namespace Eigen;
 
 ///////////////////////////////////////////////////////////
@@ -62,7 +61,6 @@ void GPou::test(const EMatrixX& xt,EVectorX& f, EVectorX& var) // Is is differen
     var = 1 + noise -v.head(xt.cols()).array();
 }
 
-
 ///////////////////////////////////////////////////////////
 // ObsGP
 ///////////////////////////////////////////////////////////
@@ -72,7 +70,6 @@ void ObsGP::reset(){
     gps.clear();
     return;
 }
-
 
 ///////////////////////////////////////////////////////////
 // ObsGP 1D
@@ -240,7 +237,6 @@ void ObsGP2D::computePartition(float val[], int ni, int nj)
         Ind_i1.push_back(i1);
 
     }
-
 
     // [1]-Range for each group
     Val_j.push_back(val[1]);
@@ -465,4 +461,3 @@ void ObsGP2D::test(const EMatrixX& xt,EVectorX& val, EVectorX& var){
 
     return;
 }
-

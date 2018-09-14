@@ -94,7 +94,6 @@ protected:
     int obs_numdata;
     float range_obs_max;
 
-
 public:
     GPisMap();
     GPisMap(GPisMapParam par);

@@ -21,7 +21,6 @@
 
 #define EPS 1e-12
 
-
 float sqdist(const Point<float>& pt1, const Point<float>& pt2)
 {
     float dx = (pt1.x - pt2.x);
@@ -44,7 +43,6 @@ QuadTree::QuadTree(Point<float> c):
 {
      boundary = AABB(c,QuadTree::param.initroot_halfleng);
 }
-
 
 QuadTree::QuadTree(AABB _boundary, QuadTree* const p )
         :northWest(0),
@@ -595,7 +593,6 @@ void QuadTree::QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes
 
     return ;
  }
-
 
 void QuadTree::getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node> >& nodes)
 {

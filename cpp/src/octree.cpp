@@ -803,7 +803,6 @@ void OcTree::QueryRange(AABB3 range, std::vector<std::shared_ptr<Node3> >& nodes
     return ;
  }
 
-
 void OcTree::getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& nodes)
 {
      if (IsEmptyLeaf())
@@ -826,7 +825,6 @@ void OcTree::getAllChildrenNonEmptyNodes(std::vector<std::shared_ptr<Node3> >& n
 
      return;
 }
-
 
 void OcTree::QueryNonEmptyLevelC(AABB3 range, std::vector<OcTree*>& octs)
 {

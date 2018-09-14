@@ -28,7 +28,6 @@ tree_param QuadTree::param = tree_param(GPISMAP_TREE_MIN_HALF_LENGTH,
                                         GPISMAP_TREE_INIT_ROOT_HALF_LENGTH,
                                         GPISMAP_TREE_CLUSTER_HALF_LENGTH);
 
-
 #define MAX_RANGE 3e1
 #define MIN_RANGE 2e-1
 
@@ -115,10 +114,8 @@ bool GPisMap::preproData( float * datax,  float * dataf, int N, std::vector<floa
     obs_xyglobal.clear();
     range_obs_max= 0.0;
 
-
     if (pose.size() != 6)
         return false;
-
 
     std::copy(pose.begin(),pose.begin()+2,pose_tr.begin());
     std::copy(pose.begin()+2,pose.end(),pose_R.begin());
@@ -235,7 +232,6 @@ void GPisMap::updateMapPoints(){
     return;
 }
 
-
 void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
     // placeholders
     EMatrixX amx(1,1);
@@ -268,13 +264,11 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
         if (oc < -0.1) // TO-DO : set it as a parameter
             continue;
 
-
         // gradient in the local coord.
         Point<float> grad = (*it)->getGrad();
         float grad_loc[2];
         grad_loc[0] = pose_R[0]*grad.x + pose_R[1]*grad.y;
         grad_loc[1] = pose_R[2]*grad.x + pose_R[3]*grad.y;
-
 
         /// Compute a new position
         // Iteratively move along the normal direction.
@@ -362,7 +356,6 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
             continue;
         }
 
-
         float r_var = r0_sqr_sum/3.0 - r0_mean*r0_mean*4.0/3.0;
         r_var /= setting.delx;
         float noise = 100.0;
@@ -385,7 +378,6 @@ void GPisMap::reEvalPoints(std::vector<std::shared_ptr<Node> >& nodes){
         float temp = noise;
         noise += view_noise + abs_oc;
         grad_noise = grad_noise + 0.1*view_noise;
-
 
         // local to global coord.
         Point<float> pos_new;
@@ -471,7 +463,6 @@ void GPisMap::addNewMeas(){
     return;
 }
 
-
 void GPisMap::evalPoints(){
 
      if (t == 0 || obs_numdata < 1)
@@ -511,7 +502,6 @@ void GPisMap::evalPoints(){
             }
         }
 
-
         if ((succeeded == 0) || !(vecInserted.size() > 0)) // if failed, then continue to test the next point
             continue;
 
@@ -544,7 +534,6 @@ void GPisMap::evalPoints(){
             t->Remove(p);
             continue;
         }
-
 
         float noise = 100.0;
         float grad_noise = 1.00;

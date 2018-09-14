@@ -18,7 +18,6 @@ tree structure.
 
 Licensed under [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html).
 
-
 ## Requirements: Software
 
 1. [Eigen](http://eigen.tuxfamily.org/)
@@ -65,7 +64,6 @@ cd mex
 
 ## Video  
 [![](http://img.youtube.com/vi/_EqeoLeHzXU/0.jpg)](http://www.youtube.com/watch?v=_EqeoLeHzXU "Online Continuous Mapping using GPIS")
-
 
 ## Contributors
 
