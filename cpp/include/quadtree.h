@@ -197,7 +197,6 @@ public:
     void Update(std::shared_ptr<OnGPIS> _gp);
     std::shared_ptr<OnGPIS> const getGP(){return gp;}
 
-    // Let's implement
     bool Remove(std::shared_ptr<Node> n);
     void QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes);
     void QueryNonEmptyLevelC(AABB range, std::vector<QuadTree*>& quads);
