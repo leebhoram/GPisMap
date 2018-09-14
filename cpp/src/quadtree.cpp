@@ -576,14 +576,12 @@ void QuadTree::QueryRange(AABB range, std::vector<std::shared_ptr<Node> >& nodes
 {
     // Automatically abort if the range does not intersect this quad
     if (!boundary.intersectsAABB(range) || IsEmptyLeaf()){
-       // std::cout << "Not found!" << std::endl;
         return; // empty list
     }
 
     // Check objects at this quad level
     if (IsLeaf()){
         if (sqdist(node->getPos(), range.getCenter()) <  range.getHalfLengthSq()){
-           // std::cout << "Found!" << std::endl;
             nodes.push_back(node);
         }
         return;
