@@ -80,11 +80,11 @@ Code has been tested under:
    - 
    - If you find GPisMap useful in your research, please consider citing:
    - ```
-   - @article{<++>,
-   -     Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, Daniel D. Lee},
-   -     Title = {Oneline Continuous Mapping using Gaussian Process Implicit Surfaces},
-   -     Journal = {<++>},
-   -     Year = {<++>}
+   - @article{<blee-icra19>,
+   -     Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, and Daniel D. Lee},
+   -     Title = {Online Continuous Mapping using Gaussian Process Implicit Surfaces},
+   -     Journal = {IEEE ICRA},
+   -     Year = {2019}
    - }
    - 
    - ```
