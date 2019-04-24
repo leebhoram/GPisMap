@@ -121,6 +121,7 @@ public:
     ~GPisMap3();
     void reset();
 
+    void getAllPoints(std::vector<float> & pos);
     void update( float * dataz, int N, std::vector<float> & pose);
     bool test( float* x, int dim, int leng, float * res);
     void resetCam(camParam c);

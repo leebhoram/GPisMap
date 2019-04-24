@@ -142,6 +142,19 @@ void mexFunction (int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]) {
         }
         return;
     }   
+    else if (commstr.compare("getAllPoints")==0){
+        if (gpm != 0){
+            std::vector<float> pos;
+            gpm->getAllPoints(pos);
+
+            int N = pos.size()/3; // 2D
+            if (N > 0){
+                plhs[0] = mxCreateNumericMatrix(3,N,mxSINGLE_CLASS, mxREAL);
+                float *pRes   = (float*)mxGetPr(plhs[0]);
+                memcpy(pRes,pos.data(),sizeof(float)*3*N);
+            }
+        }
+    }
     else if (commstr.compare("reset")==0) {
         if (gpm != 0){
             gpm->reset();

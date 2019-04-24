@@ -295,7 +295,7 @@ void GPisMap3::updateMapPoints(){
                         float xv = x_loc/z_loc;
                         float yv = y_loc/z_loc;
 
-                        int( (xv > u_obs_limit[0]) && (xv < u_obs_limit[1]) && ( yv > v_obs_limit[0]) && (yv < v_obs_limit[1]));
+                        within_angle = int( (xv > u_obs_limit[0]) && (xv < u_obs_limit[1]) && ( yv > v_obs_limit[0]) && (yv < v_obs_limit[1]));
                     }
 
                 }
@@ -355,7 +355,7 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         float oc = occ_test(rinv, rinv0(0), z_loc*30.0);
 
         // If unobservable, continue
-        if (oc < -0.1) // TO-DO : set it as a parameter
+        if (oc < -0.02) // TO-DO : set it as a parameter
             continue;
 
         // gradient in the local coord.
@@ -398,7 +398,7 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
                 float oc_new = occ_test(1.0/(r_new), rinv0(0), r_new*30.0);
                 float abs_oc_new = fabs(oc_new);
 
-                if (abs_oc_new < 0.02 || oc < -0.1) // TO-DO : set it as a parameter
+                if (abs_oc_new < 0.02 || oc < -0.02) // TO-DO : set it as a parameter
                     break;
                 else if (oc*oc_new < 0.0)
                     dx = 0.5*dx; // TO-DO : set it as a parameter
@@ -741,6 +741,9 @@ void GPisMap3::updateGPs(){
     }
 
     int num_elements = updateSet.size();
+    if (num_elements < 1)
+        return;
+
     OcTree **nodes_to_update = new OcTree*[num_elements];
     int it_counter = 0;
     for (auto it = updateSet.begin(); it != updateSet.end(); ++it, ++it_counter){
@@ -943,4 +946,27 @@ bool GPisMap3::test(float * x, int dim, int leng, float * res){
     delete [] threads;
 
     return true;
+}
+
+void GPisMap3::getAllPoints(std::vector<float> & pos)
+{
+    pos.clear();
+
+    if (t==0)
+        return;
+
+    std::vector<std::shared_ptr<Node3> > nodes;
+    t->getAllChildrenNonEmptyNodes(nodes);
+
+    int N = nodes.size();
+    if (N> 0){
+        pos.resize(3*N);
+        for (int j=0; j<N; j++) {
+            int j3 = 3*j;
+            pos[j3] = nodes[j]->getPosX();
+            pos[j3+1] = nodes[j]->getPosY();
+            pos[j3+2] = nodes[j]->getPosZ();
+        }
+    }
+    return;
 }
