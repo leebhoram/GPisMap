@@ -2,7 +2,7 @@
 
 This repository contains source codes and demo files for our paper **Online
 Continuous Mapping using Gaussian Process Implicit Surfaces (GPIS)**, which is
-currently submitted to [IEEE ICRA 2019](https://www.icra2019.org/).
+going to be presented at [IEEE ICRA 2019](https://www.icra2019.org/).
 
 The representation of the environment strongly affects how robots can move and
 interact with it. The paper presents an online approach for continuous mapping
