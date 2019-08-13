@@ -79,13 +79,12 @@ Code has been tested under:
 ## Citation
  
 If you find GPisMap useful in your research, please consider citing:
- ```
+```
   @article{<blee-icra19>,
-        Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, and Daniel D. Lee},
+      Author = {Bhoram Lee, Clark Zhang, Zonghao Huang, and Daniel D. Lee},
       Title = {Online Continuous Mapping using Gaussian Process Implicit Surfaces},
-        Journal = {IEEE ICRA},
-       Year = {2019}
-   }
-    
-    ```
+      Journal = {IEEE ICRA},
+      Year = {2019}
+   }    
+```
 
