@@ -88,3 +88,5 @@ If you find GPisMap useful in your research, please consider citing:
    }    
 ```
 
+## Extra...
+Also, see [Bhoram's dissertation (Part II)](https://repository.upenn.edu/cgi/viewcontent.cgi?article=5108&context=edissertations) for technical details.
