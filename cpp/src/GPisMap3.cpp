@@ -363,7 +363,7 @@ void GPisMap3::reEvalPoints(std::vector<std::shared_ptr<Node3> >& nodes){
         float grad_loc[3];
         grad_loc[0] = pose_R[0]*grad.x + pose_R[1]*grad.y + pose_R[2]*grad.z;
         grad_loc[1] = pose_R[3]*grad.x + pose_R[4]*grad.y + pose_R[5]*grad.z;
-        grad_loc[3] = pose_R[6]*grad.x + pose_R[7]*grad.y + pose_R[8]*grad.z;
+        grad_loc[2] = pose_R[6]*grad.x + pose_R[7]*grad.y + pose_R[8]*grad.z;
 
         /// Compute a new position
         // Iteratively move along the normal direction.
