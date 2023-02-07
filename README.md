@@ -1,5 +1,7 @@
 # GPisMap 
 
+[NEW] Visit [GPisMap v2](https://github.com/leebhoram/GPisMap2) for simple python interfaces.
+
 This repository contains source codes and demo files for our paper **Online
 Continuous Mapping using Gaussian Process Implicit Surfaces (GPIS)**, which is
 presented at [IEEE ICRA 2019](https://www.icra2019.org/).
